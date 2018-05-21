@@ -1,3 +1,7 @@
+/*
+ * Copyright (C) 2018 Bill Combs
+ */
+
 package com.billcombsdevelopment.popularmovies.presenter;
 
 import android.content.Context;
