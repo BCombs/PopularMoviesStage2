@@ -7,6 +7,7 @@ package com.billcombsdevelopment.popularmovies.view;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +23,7 @@ import com.billcombsdevelopment.popularmovies.R;
 import com.billcombsdevelopment.popularmovies.model.Movie;
 import com.billcombsdevelopment.popularmovies.presenter.MainActivityPresenter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements PopularMoviesContract.View {
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
     private MovieListAdapter mRecyclerAdapter;
     private MainActivityPresenter mPresenter;
     private GridLayoutManager mGridLayoutManager = new GridLayoutManager(this, 2);
+    private Parcelable mRecyclerViewState = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +49,11 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
         mToolbar.setTitle(R.string.app_name);
         mSpinner = findViewById(R.id.main_spinner);
 
+        // Initialize Presenter
+        mPresenter = new MainActivityPresenter(this);
+        // Set to default sorting option
+        mPresenter.setSortOption(getResources().getString(R.string.most_popular));
+
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this,
                 R.layout.spinner_item,
                 getResources().getStringArray(R.array.sort_options_array));
@@ -54,7 +62,12 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
         mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
                 String sortOption = mSpinner.getSelectedItem().toString();
+                // Check is to prevent initial HTTP request on Listener initialization
+                if (sortOption.equals(mPresenter.getSortOption())) {
+                    return;
+                }
                 mPresenter.loadMovieData(sortOption);
             }
 
@@ -64,19 +77,12 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
             }
         });
 
-        // Initialize Presenter
-        mPresenter = new MainActivityPresenter(this);
-
         // RecyclerView setup
         mRecyclerView = findViewById(R.id.movie_list_rv);
         mRecyclerView.setLayoutManager(mGridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
-    }
 
-    @Override
-    public void onSuccess(List<Movie> movieList) {
-        Log.d("onSuccess", movieList.get(0).getTitle());
-        // Movies were retrieved successfully, create the adapter and pass in the movie list
+        List<Movie> movieList = new ArrayList<>();
         mRecyclerAdapter = new MovieListAdapter(this, movieList, new OnItemClickListener() {
             @Override
             public void onItemClick(Movie movie) {
@@ -109,17 +115,51 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
                 }
             }
         });
+        mPresenter.loadMovieData(mPresenter.getSortOption());
     }
 
     @Override
-    public void onFailure(String message) {
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+    public void onSuccess(List<Movie> movieList) {
+        Log.d("onSuccess", movieList.get(0).getTitle());
+        mRecyclerView.invalidate();
+        mRecyclerAdapter.setMovieList(movieList);
+        mRecyclerView.setAdapter(mRecyclerAdapter);
     }
 
     @Override
     public void onUpdate(List<Movie> movieList) {
         mRecyclerAdapter.setMovieList(movieList);
         mRecyclerAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("movieList", mPresenter.getMovieList());
+        Parcelable recyclerViewState = mGridLayoutManager.onSaveInstanceState();
+        outState.putParcelable("recyclerViewState", recyclerViewState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mPresenter.setMovieList(savedInstanceState.<Movie>getParcelableArrayList("movieList"));
+        // Restore RecyclerView State
+        mRecyclerViewState =
+                savedInstanceState.getParcelable("recyclerViewState");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mRecyclerViewState != null) {
+            mGridLayoutManager.onRestoreInstanceState(mRecyclerViewState);
+        }
+    }
+
+    @Override
+    public void onFailure(String message) {
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     public interface OnItemClickListener {

@@ -44,6 +44,13 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
         mNetworkRequests.additionalRequest(mSortOption, mCurrentPage);
     }
 
+    public String getSortOption() {
+        return mSortOption;
+    }
+
+    public void setSortOption(String sortOption) {
+        this.mSortOption = sortOption;
+    }
 
     public boolean isLoading() {
         return mIsLoading;
@@ -57,11 +64,20 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
         return PAGE_SIZE;
     }
 
+    public ArrayList<Movie> getMovieList() {
+        ArrayList<Movie> movieList = (ArrayList<Movie>) mMovieList;
+        return movieList;
+    }
+
+    public void setMovieList(ArrayList<Movie> movieList) {
+        this.mMovieList = movieList;
+    }
+
     @Override
     public void onSuccess(MovieData movieData) {
         mIsLoading = false;
-        mCurrentPage++;
         mMovieData = movieData;
+        mMovieList.clear();
         mMovieList = movieData.getMovies();
         mMainActivityView.onSuccess(mMovieList);
     }
