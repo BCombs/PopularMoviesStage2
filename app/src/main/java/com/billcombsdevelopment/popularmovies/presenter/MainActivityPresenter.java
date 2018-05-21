@@ -20,7 +20,7 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
     private NetworkRequests mNetworkRequests;
     private MovieData mMovieData = null;
     private List<Movie> mMovieList = new ArrayList<>();
-    private boolean isLoading = false;
+    private boolean mIsLoading = false;
     private int mCurrentPage = 1;
     private String mSortOption = "";
 
@@ -33,19 +33,20 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
     public void loadMovieData(String sortOption) {
         mCurrentPage = 1;
         mSortOption = sortOption;
-        isLoading = true;
+        mIsLoading = true;
         mNetworkRequests.makeNetworkRequest(sortOption, mCurrentPage);
     }
 
     @Override
     public void loadMoreMovieData() {
+        mIsLoading = true;
         mCurrentPage++;
         mNetworkRequests.additionalRequest(mSortOption, mCurrentPage);
     }
 
 
     public boolean isLoading() {
-        return isLoading;
+        return mIsLoading;
     }
 
     public boolean isLastPage() {
@@ -58,7 +59,7 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
 
     @Override
     public void onSuccess(MovieData movieData) {
-        isLoading = false;
+        mIsLoading = false;
         mCurrentPage++;
         mMovieData = movieData;
         mMovieList = movieData.getMovies();
@@ -67,12 +68,13 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
 
     @Override
     public void onFailure(String message) {
-        isLoading = false;
+        mIsLoading = false;
         mMainActivityView.onFailure(message);
     }
 
     @Override
     public void onUpdate(MovieData movieData) {
+        mIsLoading = false;
         List<Movie> movieList = movieData.getMovies();
         for (Movie movie : movieList) {
             mMovieList.add(movie);
