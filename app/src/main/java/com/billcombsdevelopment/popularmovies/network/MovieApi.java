@@ -9,6 +9,7 @@ import com.billcombsdevelopment.popularmovies.model.MovieData;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Query;
 
 public interface MovieApi {
 
@@ -16,9 +17,9 @@ public interface MovieApi {
     String topRatedMovies = "movie/top_rated?api_key=" + BuildConfig.API_KEY;
 
     @GET(popularMovies)
-    Call<MovieData> getPopularMovies();
+    Call<MovieData> getPopularMovies(@Query("page") int pageNumber);
 
     @GET(topRatedMovies)
-    Call<MovieData> getTopRatedMovies();
+    Call<MovieData> getTopRatedMovies(@Query("page") int pageNumber);
 }
 

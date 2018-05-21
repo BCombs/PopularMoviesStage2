@@ -4,11 +4,8 @@
 
 package com.billcombsdevelopment.popularmovies.network;
 
-import com.billcombsdevelopment.popularmovies.model.Movie;
 import com.billcombsdevelopment.popularmovies.model.MovieData;
 import com.billcombsdevelopment.popularmovies.view.PopularMoviesContract;
-
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,7 +22,7 @@ public class NetworkRequests {
         this.mListener = listener;
     }
 
-    public void makeNetworkRequest(String sortOption) {
+    public void makeNetworkRequest(String sortOption, int pageNumber) {
         Retrofit client = RetrofitClient.getRetrofitClient();
 
         MovieApi movieApi = client.create(MovieApi.class);
@@ -34,21 +31,20 @@ public class NetworkRequests {
 
         switch (sortOption) {
             case MOST_POPULAR_QUERY:
-                call = movieApi.getPopularMovies();
+                call = movieApi.getPopularMovies(pageNumber);
                 break;
             case TOP_RATED_QUERY:
-                call = movieApi.getTopRatedMovies();
+                call = movieApi.getTopRatedMovies(pageNumber);
                 break;
             default:
-                call = movieApi.getPopularMovies();
+                call = movieApi.getPopularMovies(pageNumber);
         }
 
         call.enqueue(new Callback<MovieData>() {
             @Override
             public void onResponse(Call<MovieData> call, Response<MovieData> response) {
                 MovieData movieData = response.body();
-                List<Movie> movieList = movieData.getMovies();
-                mListener.onSuccess(movieList);
+                mListener.onSuccess(movieData);
             }
 
             @Override
@@ -58,4 +54,38 @@ public class NetworkRequests {
             }
         });
     }
+
+    public void additionalRequest(String sortOption, int pageNumber) {
+        Retrofit client = RetrofitClient.getRetrofitClient();
+
+        MovieApi movieApi = client.create(MovieApi.class);
+
+        Call<MovieData> call;
+
+        switch (sortOption) {
+            case MOST_POPULAR_QUERY:
+                call = movieApi.getPopularMovies(pageNumber);
+                break;
+            case TOP_RATED_QUERY:
+                call = movieApi.getTopRatedMovies(pageNumber);
+                break;
+            default:
+                call = movieApi.getPopularMovies(pageNumber);
+        }
+
+        call.enqueue(new Callback<MovieData>() {
+            @Override
+            public void onResponse(Call<MovieData> call, Response<MovieData> response) {
+                MovieData movieData = response.body();
+                mListener.onUpdate(movieData);
+            }
+
+            @Override
+            public void onFailure(Call<MovieData> call, Throwable t) {
+                mListener.onFailure(t.getMessage());
+                call.cancel();
+            }
+        });
+    }
+
 }

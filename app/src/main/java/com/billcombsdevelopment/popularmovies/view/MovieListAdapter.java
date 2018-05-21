@@ -26,7 +26,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
     private String BASE_POSTER_URL = "http://image.tmdb.org/t/p/w185/";
 
     public MovieListAdapter(Context context, List<Movie> movieList,
-                              MainActivity.OnItemClickListener listener) {
+                            MainActivity.OnItemClickListener listener) {
         this.mMovieList = movieList;
         this.mContext = context;
         this.mListener = listener;
@@ -50,6 +50,10 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
     @Override
     public int getItemCount() {
         return mMovieList == null ? 0 : mMovieList.size();
+    }
+
+    public void setMovieList(List<Movie> movieList) {
+        this.mMovieList = movieList;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

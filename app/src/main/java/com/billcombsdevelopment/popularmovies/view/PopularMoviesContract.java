@@ -5,6 +5,7 @@
 package com.billcombsdevelopment.popularmovies.view;
 
 import com.billcombsdevelopment.popularmovies.model.Movie;
+import com.billcombsdevelopment.popularmovies.model.MovieData;
 
 import java.util.List;
 
@@ -17,15 +18,21 @@ public interface PopularMoviesContract {
         void onSuccess(List<Movie> movieList);
 
         void onFailure(String message);
+
+        void onUpdate(List<Movie> movieList);
     }
 
     interface Presenter {
-        void getMovieData(String sortOption);
+        void loadMovieData(String sortOption);
+
+        void loadMoreMovieData();
     }
 
     interface MovieDataListener {
-        void onSuccess(List<Movie> movieList);
+        void onSuccess(MovieData movieData);
 
         void onFailure(String message);
+
+        void onUpdate(MovieData movieData);
     }
 }

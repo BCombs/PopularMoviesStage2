@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
     private RecyclerView mRecyclerView;
     private MovieListAdapter mRecyclerAdapter;
     private MainActivityPresenter mPresenter;
+    private GridLayoutManager mGridLayoutManager = new GridLayoutManager(this, 2);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String sortOption = mSpinner.getSelectedItem().toString();
-                mPresenter.getMovieData(sortOption);
+                mPresenter.loadMovieData(sortOption);
             }
 
             @Override
@@ -67,12 +69,13 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
 
         // RecyclerView setup
         mRecyclerView = findViewById(R.id.movie_list_rv);
-        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        mRecyclerView.setLayoutManager(mGridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
     }
 
     @Override
     public void onSuccess(List<Movie> movieList) {
+        Log.d("onSuccess", movieList.get(0).getTitle());
         // Movies were retrieved successfully, create the adapter and pass in the movie list
         mRecyclerAdapter = new MovieListAdapter(this, movieList, new OnItemClickListener() {
             @Override
@@ -83,11 +86,40 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
             }
         });
         mRecyclerView.setAdapter(mRecyclerAdapter);
+
+        /* Set an OnScrollListener for pagination
+         * Information found at
+         * https://medium.com/@etiennelawlor/pagination-with-recyclerview-1cb7e66a502b
+         */
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int visibleItemCount = mGridLayoutManager.getChildCount();
+                int totalItemCount = mGridLayoutManager.getItemCount();
+                int firstVisibleItemPos =
+                        mGridLayoutManager.findFirstCompletelyVisibleItemPosition();
+
+                if (!mPresenter.isLoading() && !mPresenter.isLastPage()) {
+                    if ((visibleItemCount + firstVisibleItemPos) >= totalItemCount
+                            && firstVisibleItemPos >= 0
+                            && totalItemCount >= mPresenter.getPageSize()) {
+                        mPresenter.loadMoreMovieData();
+                    }
+                }
+            }
+        });
     }
 
     @Override
     public void onFailure(String message) {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onUpdate(List<Movie> movieList) {
+        mRecyclerAdapter.setMovieList(movieList);
+        mRecyclerAdapter.notifyDataSetChanged();
     }
 
     public interface OnItemClickListener {
