@@ -1,0 +1,34 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+    </style>
+
+    <!-- RatingBar star colors. Information found at
+    https://stackoverflow.com/questions/39060128/how-to-set-the-colors-of-android-small-ratingbar
+    -->
+    <style name="RatingBar" parent="Theme.AppCompat">
+        <item name="colorControlNormal">@color/ratingBarBackground</item>
+        <item name="colorControlActivated">@color/ratingBarActivated</item>
+    </style>
+
+    <!-- Common TextView attributes in activity_detail-->
+    <style name="DetailTextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/detailFontColor</item>
+    </style>
+
+    <!-- Common ImageView attributes in activity_detail-->
+    <style name="DetailImageView">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="android:adjustViewBounds">true</item>
+    </style>
+
+</resources>

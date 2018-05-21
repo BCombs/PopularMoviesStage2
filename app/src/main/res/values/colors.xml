@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#212121</color>
+    <color name="colorPrimaryDark">#000</color>
+    <color name="colorAccent">#FFD55C</color>
+
+    <!-- Color for font on movie detail activity -->
+    <color name="detailFontColor">#FFF</color>
+
+    <!-- RatingBar background color -->
+    <color name="ratingBarBackground">#E0E0E0</color>
+    <color name="ratingBarActivated">#FFD55C</color>
+</resources>

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/detail_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/backround_poster_iv"
+                style="@style/DetailImageView"
+                android:layout_width="match_parent"
+                android:contentDescription="@string/background_poster"
+                android:foreground="@drawable/backdrop_gradient"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/main_poster_iv"
+                style="@style/DetailImageView"
+                android:layout_width="140dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="184dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/linear_layout"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.6"
+                app:layout_constraintStart_toEndOf="@+id/main_poster_iv"
+                app:layout_constraintTop_toBottomOf="@+id/backround_poster_iv">
+
+                <TextView
+                    android:id="@+id/movie_title_tv"
+                    style="@style/DetailTextView"
+                    android:layout_gravity="center"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    tools:text="Movie Title" />
+
+                <TextView
+                    android:id="@+id/release_year_tv"
+                    style="@style/DetailTextView"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="10dp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal">
+
+                    <RatingBar
+                        android:id="@+id/rating_bar"
+                        style="?attr/ratingBarStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:isIndicator="true"
+                        android:numStars="5"
+                        android:stepSize="0.1"
+                        android:theme="@style/RatingBar"
+                        tools:rating="2.5" />
+
+                    <TextView
+                        android:id="@+id/total_ratings_tv"
+                        style="@style/DetailTextView"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp" />
+
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/favorites_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:alpha="0.3"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/heart_off" />
+
+            </LinearLayout>
+
+            <android.support.constraint.Barrier
+                android:id="@+id/barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="main_poster_iv, linear_layout" />
+
+            <TextView
+                android:id="@+id/movie_synopsis_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/detailFontColor"
+                android:textSize="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/barrier" />
+
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
+</LinearLayout>
