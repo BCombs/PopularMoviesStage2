@@ -13,13 +13,11 @@ import com.billcombsdevelopment.popularmovies.model.Movie;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class DetailActivityPresenter {
-    private Movie mMovie;
-    private String BASE_BACKDROP_URL = "http://image.tmdb.org/t/p/w342/";
-    private String BASE_POSTER_URL = "http://image.tmdb.org/t/p/w185/";
+    private final Movie mMovie;
     private boolean mIsFavorite = false;
-    private static final String TAG = DetailActivityPresenter.class.getSimpleName();
 
     public DetailActivityPresenter(Movie movie) {
         this.mMovie = movie;
@@ -32,6 +30,7 @@ public class DetailActivityPresenter {
     /**
      * Takes the release date String and converts it to a date. Create an instance of a
      * Calendar and set it to the Date object. Return the year the movie was released.
+     *
      * @return String releaseYear
      */
     public String getReleaseYear() {
@@ -39,8 +38,8 @@ public class DetailActivityPresenter {
         String releaseYear = "";
         Date date = null;
 
-        try{
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
             date = dateFormat.parse(releaseDate);
         } catch (java.text.ParseException e) {
             Log.d("TAG", e.getMessage());
@@ -48,7 +47,7 @@ public class DetailActivityPresenter {
 
         // Get an instance of Calendar and set to Date object
         Calendar calendar = Calendar.getInstance();
-        if(date != null) {
+        if (date != null) {
             calendar.setTime(date);
             Integer year = calendar.get(Calendar.YEAR);
             releaseYear = "(" + year.toString() + ")";
@@ -58,10 +57,12 @@ public class DetailActivityPresenter {
     }
 
     public String getPosterUrl() {
+        String BASE_POSTER_URL = "http://image.tmdb.org/t/p/w185/";
         return BASE_POSTER_URL + mMovie.getPosterPath();
     }
 
     public String getBackdropUrl() {
+        String BASE_BACKDROP_URL = "http://image.tmdb.org/t/p/w342/";
         return BASE_BACKDROP_URL + mMovie.getBackdropPath();
     }
 
@@ -76,9 +77,7 @@ public class DetailActivityPresenter {
     public String getTotalRatings(Context context) {
         int count = mMovie.getVoteCount();
         String totalRatings = context.getResources().getString(R.string.total_ratings);
-        String ratings = "(" + count + " " + totalRatings + ")";
-
-        return ratings;
+        return "(" + count + " " + totalRatings + ")";
     }
 
     public void setAsFavorite() {
@@ -90,7 +89,6 @@ public class DetailActivityPresenter {
     }
 
     public boolean isFavorite() {
-        if (mIsFavorite) return true;
-        return false;
+        return mIsFavorite;
     }
 }

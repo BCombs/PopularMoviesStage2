@@ -11,20 +11,20 @@ import java.util.List;
 
 public class MovieData {
 
-    @SerializedName("page")
+    @SerializedName("results")
     @Expose
-    private Integer mPage;
+    private final List<Movie> mMovies = null;
+
     @SerializedName("total_pages")
     @Expose
     private Integer mTotalPages;
-    @SerializedName("results")
-    @Expose
-    private List<Movie> mMovies = null;
 
-    public List<Movie> getMovies() { return mMovies; }
+    public List<Movie> getMovies() {
+        return mMovies;
+    }
 
-    public Integer getPage() { return mPage; }
-
-    public Integer getTotalPages() { return mTotalPages; }
+    public Integer getTotalPages() {
+        return mTotalPages;
+    }
 
 }

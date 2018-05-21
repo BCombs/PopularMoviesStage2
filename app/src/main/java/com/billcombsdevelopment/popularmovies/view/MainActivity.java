@@ -28,12 +28,11 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements PopularMoviesContract.View {
 
-    private Toolbar mToolbar;
+    private final GridLayoutManager mGridLayoutManager = new GridLayoutManager(this, 2);
     private Spinner mSpinner;
     private RecyclerView mRecyclerView;
     private MovieListAdapter mRecyclerAdapter;
     private MainActivityPresenter mPresenter;
-    private GridLayoutManager mGridLayoutManager = new GridLayoutManager(this, 2);
     private Parcelable mRecyclerViewState = null;
 
     @Override
@@ -45,8 +44,8 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
         getWindow().getDecorView().setBackgroundColor(Color.BLACK);
 
         // Toolbar and sorting spinner setup
-        mToolbar = findViewById(R.id.main_toolbar);
-        mToolbar.setTitle(R.string.app_name);
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
+        toolbar.setTitle(R.string.app_name);
         mSpinner = findViewById(R.id.main_spinner);
 
         // Initialize Presenter

@@ -15,9 +15,8 @@ import java.util.List;
 public class MainActivityPresenter implements PopularMoviesContract.Presenter,
         PopularMoviesContract.MovieDataListener {
 
-    private final int PAGE_SIZE = 20;
-    private PopularMoviesContract.View mMainActivityView;
-    private NetworkRequests mNetworkRequests;
+    private final PopularMoviesContract.View mMainActivityView;
+    private final NetworkRequests mNetworkRequests;
     private MovieData mMovieData = null;
     private List<Movie> mMovieList = new ArrayList<>();
     private boolean mIsLoading = false;
@@ -52,21 +51,23 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
         this.mSortOption = sortOption;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isLoading() {
         return mIsLoading;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isLastPage() {
         return mCurrentPage == mMovieData.getTotalPages();
     }
 
     public int getPageSize() {
+        int PAGE_SIZE = 20;
         return PAGE_SIZE;
     }
 
     public ArrayList<Movie> getMovieList() {
-        ArrayList<Movie> movieList = (ArrayList<Movie>) mMovieList;
-        return movieList;
+        return (ArrayList<Movie>) mMovieList;
     }
 
     public void setMovieList(ArrayList<Movie> movieList) {
@@ -90,11 +91,10 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
 
     @Override
     public void onUpdate(MovieData movieData) {
+        mCurrentPage++;
         mIsLoading = false;
         List<Movie> movieList = movieData.getMovies();
-        for (Movie movie : movieList) {
-            mMovieList.add(movie);
-        }
+        mMovieList.addAll(movieList);
         mMainActivityView.onUpdate(mMovieList);
     }
 }

@@ -23,17 +23,9 @@ import com.billcombsdevelopment.popularmovies.presenter.DetailActivityPresenter;
 import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
-    private Toolbar mToolbar;
-    private ImageView mBackgroundPosterIv;
-    private ImageView mMainPosterIv;
-    private ImageButton mFavoritesBtn;
-    private TextView mMovieTitleTv;
-    private TextView mReleaseYearTv;
-    private TextView mSynopsisTv;
-    private TextView mTotalRatingsTv;
-    private RatingBar mRatingBar;
+
+    private final Toast mToast = null;
     private DetailActivityPresenter mPresenter;
-    private Toast mToast = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,35 +36,39 @@ public class DetailActivity extends AppCompatActivity {
         getWindow().getDecorView().setBackgroundColor(Color.BLACK);
 
         // Toolbar setup
-        mToolbar = findViewById(R.id.detail_toolbar);
-        if (mToolbar != null) {
-            setSupportActionBar(mToolbar);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
+        Toolbar toolbar = findViewById(R.id.detail_toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getSupportActionBar().setHomeButtonEnabled(true);
+            }
         }
 
-        mBackgroundPosterIv = findViewById(R.id.backround_poster_iv);
-        mMainPosterIv = findViewById(R.id.main_poster_iv);
-        mMovieTitleTv = findViewById(R.id.movie_title_tv);
-        mReleaseYearTv = findViewById(R.id.release_year_tv);
-        mSynopsisTv = findViewById(R.id.movie_synopsis_tv);
-        mRatingBar = findViewById(R.id.rating_bar);
-        mTotalRatingsTv = findViewById(R.id.total_ratings_tv);
-        mFavoritesBtn = findViewById(R.id.favorites_btn);
+        ImageView backgroundPosterIv = findViewById(R.id.background_poster_iv);
+        ImageView mainPosterIv = findViewById(R.id.main_poster_iv);
+        TextView movieTitleTv = findViewById(R.id.movie_title_tv);
+        TextView releaseYearTv = findViewById(R.id.release_year_tv);
+        TextView synopsisTv = findViewById(R.id.movie_synopsis_tv);
+        RatingBar ratingBar = findViewById(R.id.rating_bar);
+        TextView totalRatingsTv = findViewById(R.id.total_ratings_tv);
+        final ImageButton favoritesBtn = findViewById(R.id.favorites_btn);
 
         Movie movie = getIntent().getParcelableExtra("movie");
         mPresenter = new DetailActivityPresenter(movie);
 
-        // Set the toolbar title to the movie title
-        getSupportActionBar().setTitle(mPresenter.getMovieTitle());
+        if (getSupportActionBar() != null) {
+            // Set the toolbar title to the movie title
+            getSupportActionBar().setTitle(mPresenter.getMovieTitle());
+        }
 
-        mFavoritesBtn.setOnClickListener(new View.OnClickListener() {
+        favoritesBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mPresenter.isFavorite()) {
                     mPresenter.removeFromFavorites();
-                    mFavoritesBtn.setImageResource(R.drawable.heart_off);
-                    mFavoritesBtn.setAlpha(0.3f);
+                    favoritesBtn.setImageResource(R.drawable.heart_off);
+                    favoritesBtn.setAlpha(0.3f);
                     if (mToast != null) {
                         mToast.cancel();
                     }
@@ -84,8 +80,8 @@ public class DetailActivity extends AppCompatActivity {
 
                 } else {
                     mPresenter.setAsFavorite();
-                    mFavoritesBtn.setImageResource(R.drawable.heart_clicked);
-                    mFavoritesBtn.setAlpha(1.0f);
+                    favoritesBtn.setImageResource(R.drawable.heart_clicked);
+                    favoritesBtn.setAlpha(1.0f);
                     if (mToast != null) {
                         mToast.cancel();
                     }
@@ -102,19 +98,19 @@ public class DetailActivity extends AppCompatActivity {
         Picasso.with(this).load(mPresenter.getBackdropUrl())
                 .placeholder(R.drawable.film)
                 .error(R.drawable.film)
-                .into(mBackgroundPosterIv);
+                .into(backgroundPosterIv);
 
         // Load the main movie poster image
         Picasso.with(this).load(mPresenter.getPosterUrl())
                 .placeholder(R.drawable.film)
                 .error(R.drawable.film)
-                .into(mMainPosterIv);
+                .into(mainPosterIv);
 
-        mMovieTitleTv.setText(mPresenter.getMovieTitle());
-        mReleaseYearTv.setText(mPresenter.getReleaseYear());
-        mSynopsisTv.setText(mPresenter.getMovieSynopsis());
-        mRatingBar.setRating(mPresenter.getMovieRating());
-        mTotalRatingsTv.setText(mPresenter.getTotalRatings(this));
+        movieTitleTv.setText(mPresenter.getMovieTitle());
+        releaseYearTv.setText(mPresenter.getReleaseYear());
+        synopsisTv.setText(mPresenter.getMovieSynopsis());
+        ratingBar.setRating(mPresenter.getMovieRating());
+        totalRatingsTv.setText(mPresenter.getTotalRatings(this));
     }
 
     @Override

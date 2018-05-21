@@ -7,27 +7,25 @@
     <!-- Used to Top Rated sorting -->
     <string name="top_rated">Top Rated</string>
 
-    <!-- Title for sort spinner -->
-    <string name="sort_title">Sort By</string>
-
     <!-- Array used for spinner sort options -->
     <string-array name="sort_options_array">
         <item>@string/most_popular</item>
         <item>@string/top_rated</item>
     </string-array>
 
-    <!-- Content Description for Background Poster -->
-    <string name="background_poster">Image of Movie Poster</string>
+    <!-- Content Description for Movie Posters -->
+    <string name="poster_content_description">Image of Movie Poster</string>
+
+    <!-- Content Description for Favorite button -->
+    <string name="favorite_btn_content_desc">Favorite Button</string>
 
     <!-- Used for total rating count in detail activity -->
     <string name="total_ratings">ratings</string>
-
-    <!-- Used when no network connection -->
-    <string name="no_network_conn">No Network Connection</string>
 
     <!-- Used for toast letting user know movie was added to favorites -->
     <string name="added_to_favorites">added to favorites</string>
 
     <!-- use to let the user know movie was removed from favorites -->
     <string name="removed_from_favorites">removed from favorites</string>
+
 </resources>

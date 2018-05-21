@@ -19,11 +19,9 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.ViewHolder> {
-    private static final String TAG = MovieListAdapter.class.getSimpleName();
+    private final Context mContext;
+    private final MainActivity.OnItemClickListener mListener;
     private List<Movie> mMovieList;
-    private Context mContext;
-    private MainActivity.OnItemClickListener mListener;
-    private String BASE_POSTER_URL = "http://image.tmdb.org/t/p/w185/";
 
     public MovieListAdapter(Context context, List<Movie> movieList,
                             MainActivity.OnItemClickListener listener) {
@@ -57,15 +55,16 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private ImageView mPosterImageView;
+        private final ImageView mPosterImageView;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
 
             mPosterImageView = itemView.findViewById(R.id.list_item_iv);
         }
 
-        public void bindData(final Movie movie, final MainActivity.OnItemClickListener listener) {
+        void bindData(final Movie movie, final MainActivity.OnItemClickListener listener) {
+            String BASE_POSTER_URL = "http://image.tmdb.org/t/p/w185/";
             String imageUrl = BASE_POSTER_URL + movie.getPosterPath();
 
             Picasso.with(mContext).load(imageUrl)

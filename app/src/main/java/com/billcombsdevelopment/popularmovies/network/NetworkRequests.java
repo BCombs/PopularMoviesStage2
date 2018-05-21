@@ -4,6 +4,8 @@
 
 package com.billcombsdevelopment.popularmovies.network;
 
+import android.support.annotation.NonNull;
+
 import com.billcombsdevelopment.popularmovies.model.MovieData;
 import com.billcombsdevelopment.popularmovies.view.PopularMoviesContract;
 
@@ -16,7 +18,7 @@ public class NetworkRequests {
 
     private final String MOST_POPULAR_QUERY = "Most Popular";
     private final String TOP_RATED_QUERY = "Top Rated";
-    private PopularMoviesContract.MovieDataListener mListener;
+    private final PopularMoviesContract.MovieDataListener mListener;
 
     public NetworkRequests(PopularMoviesContract.MovieDataListener listener) {
         this.mListener = listener;
@@ -42,13 +44,13 @@ public class NetworkRequests {
 
         call.enqueue(new Callback<MovieData>() {
             @Override
-            public void onResponse(Call<MovieData> call, Response<MovieData> response) {
+            public void onResponse(@NonNull Call<MovieData> call, @NonNull Response<MovieData> response) {
                 MovieData movieData = response.body();
                 mListener.onSuccess(movieData);
             }
 
             @Override
-            public void onFailure(Call<MovieData> call, Throwable t) {
+            public void onFailure(@NonNull Call<MovieData> call, @NonNull Throwable t) {
                 mListener.onFailure(t.getMessage());
                 call.cancel();
             }
@@ -75,13 +77,14 @@ public class NetworkRequests {
 
         call.enqueue(new Callback<MovieData>() {
             @Override
-            public void onResponse(Call<MovieData> call, Response<MovieData> response) {
+            public void onResponse(@NonNull Call<MovieData> call,
+                                   @NonNull Response<MovieData> response) {
                 MovieData movieData = response.body();
                 mListener.onUpdate(movieData);
             }
 
             @Override
-            public void onFailure(Call<MovieData> call, Throwable t) {
+            public void onFailure(@NonNull Call<MovieData> call, @NonNull Throwable t) {
                 mListener.onFailure(t.getMessage());
                 call.cancel();
             }

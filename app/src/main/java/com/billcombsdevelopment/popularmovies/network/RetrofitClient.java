@@ -7,15 +7,16 @@ package com.billcombsdevelopment.popularmovies.network;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class RetrofitClient {
+class RetrofitClient {
 
     private static Retrofit sRetrofit = null;
-    private static String BASE_URL = "http://api.themoviedb.org/3/";
 
-    private RetrofitClient(){}
+    private RetrofitClient() {
+    }
 
     public static Retrofit getRetrofitClient() {
-        if(sRetrofit == null) {
+        String BASE_URL = "http://api.themoviedb.org/3/";
+        if (sRetrofit == null) {
             sRetrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())

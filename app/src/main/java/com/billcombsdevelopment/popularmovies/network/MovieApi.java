@@ -11,7 +11,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-public interface MovieApi {
+interface MovieApi {
 
     String popularMovies = "movie/popular?api_key=" + BuildConfig.API_KEY;
     String topRatedMovies = "movie/top_rated?api_key=" + BuildConfig.API_KEY;
