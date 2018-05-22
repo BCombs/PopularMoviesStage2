@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
     private RecyclerView mRecyclerView;
     private MovieListAdapter mRecyclerAdapter;
     private MainActivityPresenter mPresenter;
-    private Parcelable mRecyclerViewState = null;
+    private Parcelable mLayoutManagerState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
         mRecyclerView.setLayoutManager(mGridLayoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        List<Movie> movieList = new ArrayList<>();
+        ArrayList<Movie> movieList = new ArrayList<>();
         mRecyclerAdapter = new MovieListAdapter(this, movieList, new OnItemClickListener() {
             @Override
             public void onItemClick(Movie movie) {
@@ -114,7 +114,22 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
                 }
             }
         });
-        mPresenter.loadMovieData(mPresenter.getSortOption());
+
+        if (savedInstanceState != null) {
+            movieList = savedInstanceState.getParcelableArrayList("movieList");
+            int totalPages = savedInstanceState.getInt("totalPages");
+            int currentPage = savedInstanceState.getInt("currentPage");
+            String sortOption = savedInstanceState.getString("sortOption");
+            mLayoutManagerState = savedInstanceState.getParcelable("layoutManagerState");
+
+            mPresenter.onRestore(movieList, currentPage, totalPages, sortOption);
+            mRecyclerView.invalidate();
+            mRecyclerAdapter.setMovieList(movieList);
+            mRecyclerAdapter.notifyDataSetChanged();
+            mGridLayoutManager.onRestoreInstanceState(mLayoutManagerState);
+        } else {
+            mPresenter.loadMovieData(mPresenter.getSortOption());
+        }
     }
 
     @Override
@@ -132,28 +147,19 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
     }
 
     @Override
+    protected void onPause() {
+        mLayoutManagerState = mGridLayoutManager.onSaveInstanceState();
+        super.onPause();
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList("movieList", mPresenter.getMovieList());
-        Parcelable recyclerViewState = mGridLayoutManager.onSaveInstanceState();
-        outState.putParcelable("recyclerViewState", recyclerViewState);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        mPresenter.setMovieList(savedInstanceState.<Movie>getParcelableArrayList("movieList"));
-        // Restore RecyclerView State
-        mRecyclerViewState =
-                savedInstanceState.getParcelable("recyclerViewState");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (mRecyclerViewState != null) {
-            mGridLayoutManager.onRestoreInstanceState(mRecyclerViewState);
-        }
+        outState.putInt("totalPages", mPresenter.getTotalPages());
+        outState.putInt("currentPage", mPresenter.getCurrentPage());
+        outState.putString("sortOption", mPresenter.getSortOption());
+        outState.putParcelable("layoutManagerState", mLayoutManagerState);
     }
 
     @Override

@@ -17,10 +17,12 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
 
     private final PopularMoviesContract.View mMainActivityView;
     private final NetworkRequests mNetworkRequests;
+    private final int PAGE_SIZE = 20;
     private MovieData mMovieData = null;
     private List<Movie> mMovieList = new ArrayList<>();
     private boolean mIsLoading = false;
     private int mCurrentPage = 1;
+    private int mTotalPages = 1;
     private String mSortOption = "";
 
     public MainActivityPresenter(PopularMoviesContract.View view) {
@@ -51,33 +53,43 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
         this.mSortOption = sortOption;
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isLoading() {
         return mIsLoading;
     }
 
-    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isLastPage() {
-        return mCurrentPage == mMovieData.getTotalPages();
+        return mCurrentPage == mTotalPages;
+    }
+
+    public int getTotalPages() {
+        return mTotalPages;
+    }
+
+    public int getCurrentPage() {
+        return mCurrentPage;
     }
 
     public int getPageSize() {
-        int PAGE_SIZE = 20;
         return PAGE_SIZE;
+    }
+
+    public void onRestore(ArrayList<Movie> movieList, int currentPage, int totalPages,
+                          String sortOption) {
+        this.mMovieList = movieList;
+        this.mCurrentPage = currentPage;
+        this.mTotalPages = totalPages;
+        this.mSortOption = sortOption;
     }
 
     public ArrayList<Movie> getMovieList() {
         return (ArrayList<Movie>) mMovieList;
     }
 
-    public void setMovieList(ArrayList<Movie> movieList) {
-        this.mMovieList = movieList;
-    }
-
     @Override
     public void onSuccess(MovieData movieData) {
         mIsLoading = false;
         mMovieData = movieData;
+        mTotalPages = movieData.getTotalPages();
         mMovieList.clear();
         mMovieList = movieData.getMovies();
         mMainActivityView.onSuccess(mMovieList);
