@@ -12,7 +12,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -109,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
                     if ((visibleItemCount + firstVisibleItemPos) >= totalItemCount
                             && firstVisibleItemPos >= 0
                             && totalItemCount >= mPresenter.getPageSize()) {
-                        mPresenter.loadMoreMovieData();
+                        mPresenter.loadMoreData();
                     }
                 }
             }
@@ -133,8 +132,7 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
     }
 
     @Override
-    public void onSuccess(List<Movie> movieList) {
-        Log.d("onSuccess", movieList.get(0).getTitle());
+    public void onMovieSuccess(List<Movie> movieList) {
         mRecyclerView.invalidate();
         mRecyclerAdapter.setMovieList(movieList);
         mRecyclerView.setAdapter(mRecyclerAdapter);

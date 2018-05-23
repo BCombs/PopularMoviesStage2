@@ -29,6 +29,9 @@ public class Movie implements Parcelable {
         }
     };
 
+    @SerializedName("id")
+    @Expose
+    private final Integer mId;
     @SerializedName("title")
     @Expose
     private final String mTitle;
@@ -51,8 +54,9 @@ public class Movie implements Parcelable {
     @Expose
     private final Integer mVoteCount;
 
-    public Movie(String name, String posterPath, String backdropPath, String synopsis,
+    public Movie(Integer id, String name, String posterPath, String backdropPath, String synopsis,
                  String releaseDate, Float userRating, Integer voteCount) {
+        this.mId = id;
         this.mTitle = name;
         this.mPosterPath = posterPath;
         this.mBackdropPath = backdropPath;
@@ -64,6 +68,7 @@ public class Movie implements Parcelable {
 
     // Private constructor for Parcel
     private Movie(Parcel source) {
+        this.mId = source.readInt();
         this.mTitle = source.readString();
         this.mPosterPath = source.readString();
         this.mBackdropPath = source.readString();
@@ -72,6 +77,8 @@ public class Movie implements Parcelable {
         this.mUserRating = source.readFloat();
         this.mVoteCount = source.readInt();
     }
+
+    public Integer getId() { return mId; }
 
     public String getTitle() {
         return mTitle;
@@ -108,6 +115,7 @@ public class Movie implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mId);
         dest.writeString(mTitle);
         dest.writeString(mPosterPath);
         dest.writeString(mBackdropPath);

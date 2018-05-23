@@ -4,10 +4,15 @@
 
 package com.billcombsdevelopment.popularmovies.view;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,13 +24,20 @@ import android.widget.Toast;
 
 import com.billcombsdevelopment.popularmovies.R;
 import com.billcombsdevelopment.popularmovies.model.Movie;
+import com.billcombsdevelopment.popularmovies.model.MovieTrailer;
 import com.billcombsdevelopment.popularmovies.presenter.DetailActivityPresenter;
 import com.squareup.picasso.Picasso;
 
-public class DetailActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class DetailActivity extends AppCompatActivity implements PopularMoviesContract.DetailView {
 
     private final Toast mToast = null;
     private DetailActivityPresenter mPresenter;
+    private RecyclerView mTrailerRv;
+    private TrailerListAdapter mTrailerAdapter;
+    private TextView mNoTrailersTv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +66,14 @@ public class DetailActivity extends AppCompatActivity {
         TextView totalRatingsTv = findViewById(R.id.total_ratings_tv);
         final ImageButton favoritesBtn = findViewById(R.id.favorites_btn);
 
+        // Visible when there are no movie trailers
+        mNoTrailersTv = findViewById(R.id.no_trailers_tv);
+
         Movie movie = getIntent().getParcelableExtra("movie");
-        mPresenter = new DetailActivityPresenter(movie);
+        mPresenter = new DetailActivityPresenter(movie, this);
+
+        // Load movie trailers
+        mPresenter.loadTrailerData(mPresenter.getMovieId());
 
         if (getSupportActionBar() != null) {
             // Set the toolbar title to the movie title
@@ -111,6 +129,28 @@ public class DetailActivity extends AppCompatActivity {
         synopsisTv.setText(mPresenter.getMovieSynopsis());
         ratingBar.setRating(mPresenter.getMovieRating());
         totalRatingsTv.setText(mPresenter.getTotalRatings(this));
+
+        // Setup the Trailer RecyclerView
+        mTrailerRv = findViewById(R.id.trailer_rv);
+        mTrailerRv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        // Initial trailer list
+        List<MovieTrailer> trailerList = new ArrayList<>();
+        mTrailerAdapter = new TrailerListAdapter(this, trailerList, new OnItemClickListener() {
+            @Override
+            public void onItemClick(MovieTrailer trailer) {
+                Intent youTubeAppIntent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("vnd.youtube:" + trailer.getKey()));
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://www.youtube.com/watch?v=" + trailer.getKey()));
+
+                try {
+                    getApplicationContext().startActivity(youTubeAppIntent);
+                } catch (ActivityNotFoundException e) {
+                    getApplicationContext().startActivity(browserIntent);
+                }
+            }
+        });
+        mTrailerRv.setAdapter(mTrailerAdapter);
     }
 
     @Override
@@ -121,5 +161,27 @@ public class DetailActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onTrailerSuccess(List<MovieTrailer> trailerList) {
+        // There were no trailers. Inform the user
+        if (trailerList.isEmpty()) {
+            mNoTrailersTv.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        mTrailerRv.invalidate();
+        mTrailerAdapter.setTrailerList(trailerList);
+        mTrailerRv.setAdapter(mTrailerAdapter);
+    }
+
+    @Override
+    public void onFailure(String message) {
+        mToast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(MovieTrailer trailer);
     }
 }

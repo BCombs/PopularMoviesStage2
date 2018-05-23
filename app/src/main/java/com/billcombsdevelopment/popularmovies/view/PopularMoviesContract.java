@@ -6,6 +6,8 @@ package com.billcombsdevelopment.popularmovies.view;
 
 import com.billcombsdevelopment.popularmovies.model.Movie;
 import com.billcombsdevelopment.popularmovies.model.MovieData;
+import com.billcombsdevelopment.popularmovies.model.MovieTrailer;
+import com.billcombsdevelopment.popularmovies.model.MovieTrailerData;
 
 import java.util.List;
 
@@ -15,7 +17,7 @@ import java.util.List;
  */
 public interface PopularMoviesContract {
     interface View {
-        void onSuccess(List<Movie> movieList);
+        void onMovieSuccess(List<Movie> dataList);
 
         void onFailure(String message);
 
@@ -25,14 +27,30 @@ public interface PopularMoviesContract {
     interface Presenter {
         void loadMovieData(String sortOption);
 
-        void loadMoreMovieData();
+        void loadMoreData();
     }
 
     interface MovieDataListener {
-        void onSuccess(MovieData movieData);
+        void onMovieSuccess(MovieData movieData);
 
         void onFailure(String message);
 
-        void onUpdate(MovieData movieData);
+        void onMovieUpdate(MovieData movieData);
+    }
+
+    interface DetailView {
+        void onTrailerSuccess(List<MovieTrailer> trailerList);
+
+        void onFailure(String message);
+    }
+
+    interface DetailPresenter {
+        void loadTrailerData(String movieId);
+    }
+
+    interface DetailDataListener {
+        void onTrailerSuccess(MovieTrailerData trailerData);
+
+        void onFailure(String message);
     }
 }

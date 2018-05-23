@@ -7,6 +7,7 @@ package com.billcombsdevelopment.popularmovies.network;
 import android.support.annotation.NonNull;
 
 import com.billcombsdevelopment.popularmovies.model.MovieData;
+import com.billcombsdevelopment.popularmovies.model.MovieTrailerData;
 import com.billcombsdevelopment.popularmovies.view.PopularMoviesContract;
 
 import retrofit2.Call;
@@ -18,10 +19,16 @@ public class NetworkRequests {
 
     private final String MOST_POPULAR_QUERY = "Most Popular";
     private final String TOP_RATED_QUERY = "Top Rated";
-    private final PopularMoviesContract.MovieDataListener mListener;
+
+    private PopularMoviesContract.MovieDataListener mListener = null;
+    private PopularMoviesContract.DetailDataListener mDetailListener = null;
 
     public NetworkRequests(PopularMoviesContract.MovieDataListener listener) {
         this.mListener = listener;
+    }
+
+    public NetworkRequests(PopularMoviesContract.DetailDataListener detailListener) {
+        this.mDetailListener = detailListener;
     }
 
     public void makeNetworkRequest(String sortOption, int pageNumber) {
@@ -46,7 +53,7 @@ public class NetworkRequests {
             @Override
             public void onResponse(@NonNull Call<MovieData> call, @NonNull Response<MovieData> response) {
                 MovieData movieData = response.body();
-                mListener.onSuccess(movieData);
+                mListener.onMovieSuccess(movieData);
             }
 
             @Override
@@ -80,7 +87,7 @@ public class NetworkRequests {
             public void onResponse(@NonNull Call<MovieData> call,
                                    @NonNull Response<MovieData> response) {
                 MovieData movieData = response.body();
-                mListener.onUpdate(movieData);
+                mListener.onMovieUpdate(movieData);
             }
 
             @Override
@@ -91,4 +98,26 @@ public class NetworkRequests {
         });
     }
 
+    public void trailerRequest(String movieId) {
+        Retrofit client = RetrofitClient.getRetrofitClient();
+
+        MovieApi movieApi = client.create(MovieApi.class);
+
+        Call<MovieTrailerData> call = movieApi.getMovieTrailers(movieId);
+        call.enqueue(new Callback<MovieTrailerData>() {
+            @Override
+            public void onResponse(@NonNull Call<MovieTrailerData> call,
+                                   @NonNull Response<MovieTrailerData> response) {
+
+                MovieTrailerData trailerData = response.body();
+                mDetailListener.onTrailerSuccess(trailerData);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<MovieTrailerData> call, @NonNull Throwable t) {
+                mDetailListener.onFailure(t.getMessage());
+                call.cancel();
+            }
+        });
+    }
 }

@@ -9,22 +9,36 @@ import android.util.Log;
 
 import com.billcombsdevelopment.popularmovies.R;
 import com.billcombsdevelopment.popularmovies.model.Movie;
+import com.billcombsdevelopment.popularmovies.model.MovieTrailer;
+import com.billcombsdevelopment.popularmovies.model.MovieTrailerData;
+import com.billcombsdevelopment.popularmovies.network.NetworkRequests;
+import com.billcombsdevelopment.popularmovies.view.PopularMoviesContract;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
-public class DetailActivityPresenter {
+public class DetailActivityPresenter implements PopularMoviesContract.DetailPresenter,
+        PopularMoviesContract.DetailDataListener {
+    private final PopularMoviesContract.DetailView mDetailView;
+    private final NetworkRequests mNetworkRequests;
     private final Movie mMovie;
     private boolean mIsFavorite = false;
 
-    public DetailActivityPresenter(Movie movie) {
+    public DetailActivityPresenter(Movie movie, PopularMoviesContract.DetailView view) {
         this.mMovie = movie;
+        mDetailView = view;
+        mNetworkRequests = new NetworkRequests(this);
     }
 
     public String getMovieTitle() {
         return mMovie.getTitle();
+    }
+
+    public String getMovieId() {
+        return mMovie.getId().toString();
     }
 
     /**
@@ -90,5 +104,21 @@ public class DetailActivityPresenter {
 
     public boolean isFavorite() {
         return mIsFavorite;
+    }
+
+    @Override
+    public void loadTrailerData(String movieId) {
+        mNetworkRequests.trailerRequest(movieId);
+    }
+
+    @Override
+    public void onTrailerSuccess(MovieTrailerData trailerData) {
+        List<MovieTrailer> trailerList = trailerData.getMovieTrailers();
+        mDetailView.onTrailerSuccess(trailerList);
+    }
+
+    @Override
+    public void onFailure(String message) {
+        mDetailView.onFailure(message);
     }
 }

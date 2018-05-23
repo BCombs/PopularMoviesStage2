@@ -25,7 +25,13 @@
     <!-- Used for toast letting user know movie was added to favorites -->
     <string name="added_to_favorites">added to favorites</string>
 
-    <!-- use to let the user know movie was removed from favorites -->
+    <!-- Used to let the user know movie was removed from favorites -->
     <string name="removed_from_favorites">removed from favorites</string>
+
+    <!-- Used in the chooser for opening movie trailers -->
+    <string name="open_trailer_with">Open trailer with</string>
+
+    <!-- Used when there are no trailers available -->
+    <string name="no_trailers">No trailers available</string>
 
 </resources>

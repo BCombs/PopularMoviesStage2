@@ -39,7 +39,7 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
     }
 
     @Override
-    public void loadMoreMovieData() {
+    public void loadMoreData() {
         mIsLoading = true;
         mCurrentPage++;
         mNetworkRequests.additionalRequest(mSortOption, mCurrentPage);
@@ -86,13 +86,13 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
     }
 
     @Override
-    public void onSuccess(MovieData movieData) {
+    public void onMovieSuccess(MovieData movieData) {
         mIsLoading = false;
         mMovieData = movieData;
         mTotalPages = movieData.getTotalPages();
         mMovieList.clear();
         mMovieList = movieData.getMovies();
-        mMainActivityView.onSuccess(mMovieList);
+        mMainActivityView.onMovieSuccess(mMovieList);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
     }
 
     @Override
-    public void onUpdate(MovieData movieData) {
+    public void onMovieUpdate(MovieData movieData) {
         mCurrentPage++;
         mIsLoading = false;
         List<Movie> movieList = movieData.getMovies();

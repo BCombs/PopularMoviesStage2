@@ -15,7 +15,7 @@ class RetrofitClient {
     }
 
     public static Retrofit getRetrofitClient() {
-        String BASE_URL = "http://api.themoviedb.org/3/";
+        String BASE_URL = "https://api.themoviedb.org/3/";
         if (sRetrofit == null) {
             sRetrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
