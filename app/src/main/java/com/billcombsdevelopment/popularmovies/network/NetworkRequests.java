@@ -7,6 +7,7 @@ package com.billcombsdevelopment.popularmovies.network;
 import android.support.annotation.NonNull;
 
 import com.billcombsdevelopment.popularmovies.model.MovieData;
+import com.billcombsdevelopment.popularmovies.model.MovieReviewData;
 import com.billcombsdevelopment.popularmovies.model.MovieTrailerData;
 import com.billcombsdevelopment.popularmovies.view.PopularMoviesContract;
 
@@ -115,6 +116,29 @@ public class NetworkRequests {
 
             @Override
             public void onFailure(@NonNull Call<MovieTrailerData> call, @NonNull Throwable t) {
+                mDetailListener.onFailure(t.getMessage());
+                call.cancel();
+            }
+        });
+    }
+
+    public void reviewRequest(String movieId) {
+        Retrofit client = RetrofitClient.getRetrofitClient();
+
+        MovieApi movieApi = client.create(MovieApi.class);
+
+        Call<MovieReviewData> call = movieApi.getMovieReviews(movieId);
+        call.enqueue(new Callback<MovieReviewData>() {
+            @Override
+            public void onResponse(@NonNull Call<MovieReviewData> call,
+                                   @NonNull Response<MovieReviewData> response) {
+
+                MovieReviewData reviewData = response.body();
+                mDetailListener.onReviewSuccess(reviewData);
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<MovieReviewData> call, @NonNull Throwable t) {
                 mDetailListener.onFailure(t.getMessage());
                 call.cancel();
             }

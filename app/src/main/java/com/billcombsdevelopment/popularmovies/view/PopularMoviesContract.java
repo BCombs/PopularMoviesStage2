@@ -6,6 +6,8 @@ package com.billcombsdevelopment.popularmovies.view;
 
 import com.billcombsdevelopment.popularmovies.model.Movie;
 import com.billcombsdevelopment.popularmovies.model.MovieData;
+import com.billcombsdevelopment.popularmovies.model.MovieReview;
+import com.billcombsdevelopment.popularmovies.model.MovieReviewData;
 import com.billcombsdevelopment.popularmovies.model.MovieTrailer;
 import com.billcombsdevelopment.popularmovies.model.MovieTrailerData;
 
@@ -41,15 +43,21 @@ public interface PopularMoviesContract {
     interface DetailView {
         void onTrailerSuccess(List<MovieTrailer> trailerList);
 
+        void onReviewSuccess(List<MovieReview> movieReviews);
+
         void onFailure(String message);
     }
 
     interface DetailPresenter {
         void loadTrailerData(String movieId);
+
+        void loadReviewData(String movieId);
     }
 
     interface DetailDataListener {
         void onTrailerSuccess(MovieTrailerData trailerData);
+
+        void onReviewSuccess(MovieReviewData reviewData);
 
         void onFailure(String message);
     }

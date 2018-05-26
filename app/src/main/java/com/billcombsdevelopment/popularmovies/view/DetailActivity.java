@@ -12,7 +12,9 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SnapHelper;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,11 +26,11 @@ import android.widget.Toast;
 
 import com.billcombsdevelopment.popularmovies.R;
 import com.billcombsdevelopment.popularmovies.model.Movie;
+import com.billcombsdevelopment.popularmovies.model.MovieReview;
 import com.billcombsdevelopment.popularmovies.model.MovieTrailer;
 import com.billcombsdevelopment.popularmovies.presenter.DetailActivityPresenter;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DetailActivity extends AppCompatActivity implements PopularMoviesContract.DetailView {
@@ -36,8 +38,14 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
     private final Toast mToast = null;
     private DetailActivityPresenter mPresenter;
     private RecyclerView mTrailerRv;
+    private RecyclerView mReviewRv;
+    private View mTrailerDivider;
+    private View mReviewDivider;
+    private TextView mTrailerTeaserHeaderTv;
+    private TextView mReviewHeaderTv;
+
+    private ReviewListAdapter mReviewAdapter;
     private TrailerListAdapter mTrailerAdapter;
-    private TextView mNoTrailersTv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,14 +74,17 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
         TextView totalRatingsTv = findViewById(R.id.total_ratings_tv);
         final ImageButton favoritesBtn = findViewById(R.id.favorites_btn);
 
-        // Visible when there are no movie trailers
-        mNoTrailersTv = findViewById(R.id.no_trailers_tv);
+        mTrailerDivider = findViewById(R.id.trailer_divider);
+        mReviewDivider = findViewById(R.id.review_divider);
+        mTrailerTeaserHeaderTv = findViewById(R.id.trailer_teaser_header_tv);
+        mReviewHeaderTv = findViewById(R.id.review_header_tv);
 
         Movie movie = getIntent().getParcelableExtra("movie");
         mPresenter = new DetailActivityPresenter(movie, this);
 
         // Load movie trailers
         mPresenter.loadTrailerData(mPresenter.getMovieId());
+        mPresenter.loadReviewData(mPresenter.getMovieId());
 
         if (getSupportActionBar() != null) {
             // Set the toolbar title to the movie title
@@ -130,19 +141,26 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
         ratingBar.setRating(mPresenter.getMovieRating());
         totalRatingsTv.setText(mPresenter.getTotalRatings(this));
 
-        // Setup the Trailer RecyclerView
+        // Setup the trailer RecyclerView
         mTrailerRv = findViewById(R.id.trailer_rv);
-        mTrailerRv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        // Initial trailer list
-        List<MovieTrailer> trailerList = new ArrayList<>();
-        mTrailerAdapter = new TrailerListAdapter(this, trailerList, new OnItemClickListener() {
+        LinearLayoutManager trailerManager = new LinearLayoutManager(this,
+                LinearLayoutManager.HORIZONTAL, false);
+        mTrailerRv.setLayoutManager(trailerManager);
+
+        mTrailerAdapter = new TrailerListAdapter(this, new OnTrailerClickListener() {
             @Override
             public void onItemClick(MovieTrailer trailer) {
+                /*
+                 * Picking app or browser from
+                 * https://stackoverflow.com/questions/574195/android-youtube-app-play-video-intent
+                 */
+
                 Intent youTubeAppIntent = new Intent(Intent.ACTION_VIEW,
                         Uri.parse("vnd.youtube:" + trailer.getKey()));
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW,
                         Uri.parse("https://www.youtube.com/watch?v=" + trailer.getKey()));
 
+                // Try to open in YouTube app first, if not available open in browser
                 try {
                     getApplicationContext().startActivity(youTubeAppIntent);
                 } catch (ActivityNotFoundException e) {
@@ -151,6 +169,34 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
             }
         });
         mTrailerRv.setAdapter(mTrailerAdapter);
+
+        // Set up the review RecyclerView
+        mReviewRv = findViewById(R.id.review_rv);
+        mReviewAdapter = new ReviewListAdapter(new OnReviewClickListener() {
+            @Override
+            public void onItemClick(String url) {
+                Intent intent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse(url));
+                getApplicationContext().startActivity(intent);
+            }
+        });
+        mReviewRv.setAdapter(mReviewAdapter);
+        mReviewRv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        mReviewRv.setHasFixedSize(true);
+        SnapHelper snapHelper = new LinearSnapHelper();
+        snapHelper.attachToRecyclerView(mReviewRv);
+    }
+
+    public void removeTrailerSection() {
+        mTrailerDivider.setVisibility(View.GONE);
+        mTrailerTeaserHeaderTv.setVisibility(View.GONE);
+        mTrailerRv.setVisibility(View.GONE);
+    }
+
+    public void removeReviewSection() {
+        mReviewDivider.setVisibility(View.GONE);
+        mReviewHeaderTv.setVisibility(View.GONE);
+        mReviewRv.setVisibility(View.GONE);
     }
 
     @Override
@@ -167,13 +213,24 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
     public void onTrailerSuccess(List<MovieTrailer> trailerList) {
         // There were no trailers. Inform the user
         if (trailerList.isEmpty()) {
-            mNoTrailersTv.setVisibility(View.VISIBLE);
+            removeTrailerSection();
             return;
         }
 
-        mTrailerRv.invalidate();
         mTrailerAdapter.setTrailerList(trailerList);
         mTrailerRv.setAdapter(mTrailerAdapter);
+    }
+
+    @Override
+    public void onReviewSuccess(List<MovieReview> movieReviews) {
+        // There were no reviews. Inform the user
+        if (movieReviews.isEmpty()) {
+            removeReviewSection();
+            return;
+        }
+
+        mReviewAdapter.setReviewList(movieReviews);
+        mReviewAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -181,7 +238,11 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
         mToast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
     }
 
-    public interface OnItemClickListener {
+    public interface OnTrailerClickListener {
         void onItemClick(MovieTrailer trailer);
+    }
+
+    public interface OnReviewClickListener {
+        void onItemClick(String url);
     }
 }

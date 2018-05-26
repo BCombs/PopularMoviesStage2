@@ -9,6 +9,8 @@ import android.util.Log;
 
 import com.billcombsdevelopment.popularmovies.R;
 import com.billcombsdevelopment.popularmovies.model.Movie;
+import com.billcombsdevelopment.popularmovies.model.MovieReview;
+import com.billcombsdevelopment.popularmovies.model.MovieReviewData;
 import com.billcombsdevelopment.popularmovies.model.MovieTrailer;
 import com.billcombsdevelopment.popularmovies.model.MovieTrailerData;
 import com.billcombsdevelopment.popularmovies.network.NetworkRequests;
@@ -112,9 +114,20 @@ public class DetailActivityPresenter implements PopularMoviesContract.DetailPres
     }
 
     @Override
+    public void loadReviewData(String movieId) {
+        mNetworkRequests.reviewRequest(movieId);
+    }
+
+    @Override
     public void onTrailerSuccess(MovieTrailerData trailerData) {
         List<MovieTrailer> trailerList = trailerData.getMovieTrailers();
         mDetailView.onTrailerSuccess(trailerList);
+    }
+
+    @Override
+    public void onReviewSuccess(MovieReviewData reviewData) {
+        List<MovieReview> movieReviews = reviewData.getMovieReviews();
+        mDetailView.onReviewSuccess(movieReviews);
     }
 
     @Override

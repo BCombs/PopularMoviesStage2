@@ -78,7 +78,9 @@ public class Movie implements Parcelable {
         this.mVoteCount = source.readInt();
     }
 
-    public Integer getId() { return mId; }
+    public Integer getId() {
+        return mId;
+    }
 
     public String getTitle() {
         return mTitle;

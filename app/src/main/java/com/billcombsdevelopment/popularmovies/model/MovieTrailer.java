@@ -17,11 +17,15 @@ public class MovieTrailer {
     @SerializedName("name")
     @Expose
     private final String mName;
+    @SerializedName("type")
+    @Expose
+    private String mType;
 
-    public MovieTrailer(String id, String key, String name) {
+    public MovieTrailer(String id, String key, String name, String type) {
         this.mId = id;
         this.mKey = key;
         this.mName = name;
+        this.mType = type;
     }
 
     public String getId() {
@@ -34,5 +38,9 @@ public class MovieTrailer {
 
     public String getName() {
         return mName;
+    }
+
+    public String getType() {
+        return mType;
     }
 }

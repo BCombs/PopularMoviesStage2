@@ -19,8 +19,10 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingBottom="20dp">
 
+            <!-- BEGIN MAIN OVERVIEW SECTION -->
             <ImageView
                 android:id="@+id/background_poster_iv"
                 style="@style/DetailImageView"
@@ -127,26 +129,28 @@
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/barrier" />
+            <!-- END MAIN OVERVIEW SECTION -->
 
+            <!-- BEGIN MOVIE TRAILER SECTION -->
             <View
-                android:id="@+id/synopsis_trailer_divider"
+                android:id="@+id/trailer_divider"
                 style="@style/Divider"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/movie_synopsis_tv" />
 
             <TextView
-                android:id="@+id/no_trailers_tv"
+                android:id="@+id/trailer_teaser_header_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:gravity="center"
-                android:text="@string/no_trailers"
+                android:layout_marginTop="5dp"
+                android:alpha="0.5"
+                android:paddingLeft="10dp"
+                android:text="@string/trailers_and_teasers_header"
+                android:textAllCaps="true"
                 android:textColor="@color/detailFontColor"
-                android:textSize="20dp"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/synopsis_trailer_divider" />
+                app:layout_constraintTop_toBottomOf="@id/trailer_divider" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/trailer_rv"
@@ -155,20 +159,47 @@
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/synopsis_trailer_divider" />
+                app:layout_constraintTop_toBottomOf="@id/trailer_teaser_header_tv" />
+
+            <!-- END MOVIE TRAILER SECTION -->
 
             <android.support.constraint.Barrier
                 android:id="@+id/trailer_barrier"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:barrierAllowsGoneWidgets="false"
                 app:barrierDirection="bottom"
-                app:constraint_referenced_ids="trailer_rv, no_trailers_tv" />
+                app:constraint_referenced_ids="trailer_rv, movie_synopsis_tv" />
 
+            <!-- BEGIN MOVIE REVIEW SECTION -->
             <View
-                android:id="@+id/trailer_review_divider"
+                android:id="@+id/review_divider"
                 style="@style/Divider"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/trailer_barrier" />
+
+            <TextView
+                android:id="@+id/review_header_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:alpha="0.5"
+                android:paddingLeft="10dp"
+                android:text="@string/reviews_header"
+                android:textAllCaps="true"
+                android:textColor="@color/detailFontColor"
+                android:textSize="14sp"
+                app:layout_constraintTop_toBottomOf="@id/review_divider" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/review_rv"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/review_header_tv" />
+            <!-- END MOVIE REVIEW SECTION -->
 
         </android.support.constraint.ConstraintLayout>
     </android.support.v4.widget.NestedScrollView>

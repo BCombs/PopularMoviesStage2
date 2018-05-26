@@ -22,13 +22,12 @@ import java.util.List;
 public class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.ViewHolder> {
 
     private final Context mContext;
-    private final DetailActivity.OnItemClickListener mListener;
+    private final DetailActivity.OnTrailerClickListener mListener;
     private List<MovieTrailer> mTrailerList;
 
-    public TrailerListAdapter(Context context, List<MovieTrailer> trailerList,
-                              DetailActivity.OnItemClickListener listener) {
+    public TrailerListAdapter(Context context, DetailActivity.OnTrailerClickListener listener) {
         this.mContext = context;
-        this.mTrailerList = trailerList;
+        this.mTrailerList = null;
         this.mListener = listener;
     }
 
@@ -68,7 +67,7 @@ public class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.
         }
 
         void bind(final MovieTrailer trailer,
-                  final DetailActivity.OnItemClickListener listener) {
+                  final DetailActivity.OnTrailerClickListener listener) {
             String BASE_THUMBNAIL_URL = "https://img.youtube.com/vi/";
             String DEFAULT_THUMBNAIL_IMAGE = "/1.jpg";
 

@@ -28,10 +28,13 @@
     <!-- Used to let the user know movie was removed from favorites -->
     <string name="removed_from_favorites">removed from favorites</string>
 
-    <!-- Used in the chooser for opening movie trailers -->
-    <string name="open_trailer_with">Open trailer with</string>
+    <!-- Header for trailer RecyclerView -->
+    <string name="trailers_and_teasers_header">Trailers and Teasers</string>
 
-    <!-- Used when there are no trailers available -->
-    <string name="no_trailers">No trailers available</string>
+    <!-- Header for review RecyclerView -->
+    <string name="reviews_header">Reviews</string>
+
+    <!-- Lets the user know who the review was posted by -->
+    <string name="posted_by">Posted by:</string>
 
 </resources>
