@@ -8,6 +8,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -104,7 +105,7 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
 
                     String message = mPresenter.getMovieTitle() + " " +
                             getResources().getString(R.string.removed_from_favorites);
-                    mToast.makeText(getApplicationContext(), message,
+                    mToast.makeText(DetailActivity.this, message,
                             Toast.LENGTH_SHORT).show();
 
                 } else {
@@ -117,7 +118,7 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
 
                     String message = mPresenter.getMovieTitle() + " " +
                             getResources().getString(R.string.added_to_favorites);
-                    mToast.makeText(getApplicationContext(), message,
+                    mToast.makeText(DetailActivity.this, message,
                             Toast.LENGTH_SHORT).show();
                 }
             }
@@ -162,9 +163,9 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
 
                 // Try to open in YouTube app first, if not available open in browser
                 try {
-                    getApplicationContext().startActivity(youTubeAppIntent);
+                    DetailActivity.this.startActivity(youTubeAppIntent);
                 } catch (ActivityNotFoundException e) {
-                    getApplicationContext().startActivity(browserIntent);
+                    DetailActivity.this.startActivity(browserIntent);
                 }
             }
         });
@@ -203,8 +204,14 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    finishAfterTransition();
+                    return true;
+                } else {
+                    NavUtils.navigateUpFromSameTask(this);
+                    return true;
+                }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -235,7 +242,7 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
 
     @Override
     public void onFailure(String message) {
-        mToast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+        mToast.makeText(DetailActivity.this, message, Toast.LENGTH_SHORT);
     }
 
     public interface OnTrailerClickListener {

@@ -6,8 +6,10 @@ package com.billcombsdevelopment.popularmovies.view;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -83,12 +85,24 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
         ArrayList<Movie> movieList = new ArrayList<>();
         mRecyclerAdapter = new MovieListAdapter(this, movieList, new OnItemClickListener() {
             @Override
-            public void onItemClick(Movie movie) {
-                Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
+            public void onItemClick(Movie movie, View view) {
+                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
                 intent.putExtra("movie", movie);
-                startActivity(intent);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ActivityOptionsCompat options = ActivityOptionsCompat
+                            .makeSceneTransitionAnimation(
+                                    MainActivity.this,
+                                    view,
+                                    getResources().getString(R.string.movie_poster_transition));
+
+                    startActivity(intent, options.toBundle());
+                } else {
+                    startActivity(intent);
+                }
             }
         });
+
         mRecyclerView.setAdapter(mRecyclerAdapter);
 
         /* Set an OnScrollListener for pagination
@@ -133,9 +147,9 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
 
     @Override
     public void onMovieSuccess(List<Movie> movieList) {
-        mRecyclerView.invalidate();
         mRecyclerAdapter.setMovieList(movieList);
-        mRecyclerView.setAdapter(mRecyclerAdapter);
+        mRecyclerView.scrollToPosition(0);
+        mRecyclerAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -162,10 +176,10 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
 
     @Override
     public void onFailure(String message) {
-        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 
     public interface OnItemClickListener {
-        void onItemClick(Movie movie);
+        void onItemClick(Movie movie, View view);
     }
 }

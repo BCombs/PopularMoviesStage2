@@ -29,9 +29,9 @@ public class DetailActivityPresenter implements PopularMoviesContract.DetailPres
     private final Movie mMovie;
     private boolean mIsFavorite = false;
 
-    public DetailActivityPresenter(Movie movie, PopularMoviesContract.DetailView view) {
+    public DetailActivityPresenter(Movie movie, PopularMoviesContract.DetailView detailView) {
         this.mMovie = movie;
-        mDetailView = view;
+        mDetailView = detailView;
         mNetworkRequests = new NetworkRequests(this);
     }
 

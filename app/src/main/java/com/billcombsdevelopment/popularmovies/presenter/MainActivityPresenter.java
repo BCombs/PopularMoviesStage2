@@ -18,7 +18,6 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
     private final PopularMoviesContract.View mMainActivityView;
     private final NetworkRequests mNetworkRequests;
     private final int PAGE_SIZE = 20;
-    private MovieData mMovieData = null;
     private List<Movie> mMovieList = new ArrayList<>();
     private boolean mIsLoading = false;
     private int mCurrentPage = 1;
@@ -88,7 +87,6 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
     @Override
     public void onMovieSuccess(MovieData movieData) {
         mIsLoading = false;
-        mMovieData = movieData;
         mTotalPages = movieData.getTotalPages();
         mMovieList.clear();
         mMovieList = movieData.getMovies();

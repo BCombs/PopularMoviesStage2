@@ -7,10 +7,14 @@
     <!-- Used to Top Rated sorting -->
     <string name="top_rated">Top Rated</string>
 
+    <!-- Used for favorites sorting -->
+    <string name="favorites">Favorites</string>
+
     <!-- Array used for spinner sort options -->
     <string-array name="sort_options_array">
         <item>@string/most_popular</item>
         <item>@string/top_rated</item>
+        <item>@string/favorites</item>
     </string-array>
 
     <!-- Content Description for Movie Posters -->
@@ -36,5 +40,8 @@
 
     <!-- Lets the user know who the review was posted by -->
     <string name="posted_by">Posted by:</string>
+
+    <!-- Transition name for movie poster -->
+    <string name="movie_poster_transition">movie_poster_transition</string>
 
 </resources>

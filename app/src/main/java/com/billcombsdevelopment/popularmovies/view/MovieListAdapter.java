@@ -77,7 +77,7 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
 
                 @Override
                 public void onClick(View v) {
-                    listener.onItemClick(movie);
+                    listener.onItemClick(movie, v);
                 }
             });
         }
