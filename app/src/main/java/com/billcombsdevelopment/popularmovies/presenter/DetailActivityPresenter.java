@@ -17,6 +17,7 @@ import com.billcombsdevelopment.popularmovies.network.NetworkRequests;
 import com.billcombsdevelopment.popularmovies.view.PopularMoviesContract;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -120,13 +121,29 @@ public class DetailActivityPresenter implements PopularMoviesContract.DetailPres
 
     @Override
     public void onTrailerSuccess(MovieTrailerData trailerData) {
-        List<MovieTrailer> trailerList = trailerData.getMovieTrailers();
+        List<MovieTrailer> trailerList = new ArrayList<>();
+        /*
+         * Check if we successfully retrieved the data we wanted. If we did, fetch the trailers.
+         * If trailerData is null (502 Bad Gateway response for example) return the empty list to
+         * hide the trailer section from the UI.
+         */
+        if(trailerData != null) {
+            trailerList = trailerData.getMovieTrailers();
+        }
         mDetailView.onTrailerSuccess(trailerList);
     }
 
     @Override
     public void onReviewSuccess(MovieReviewData reviewData) {
-        List<MovieReview> movieReviews = reviewData.getMovieReviews();
+        /*
+         * Check if we successfully retrieved the data we wanted. If we did, fetch the reviews.
+         * If reviewData is null (502 Bad Gateway response for example) return the empty list to
+         * hide the review section from the UI.
+         */
+        List<MovieReview> movieReviews = new ArrayList<>();
+        if(reviewData != null) {
+            movieReviews = reviewData.getMovieReviews();
+        }
         mDetailView.onReviewSuccess(movieReviews);
     }
 

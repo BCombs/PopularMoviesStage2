@@ -29,6 +29,11 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
         this.mNetworkRequests = new NetworkRequests(this);
     }
 
+    /**
+     * Makes the initial request for movie data and sets/resets the current page to 1
+     *
+     * @param sortOption
+     */
     @Override
     public void loadMovieData(String sortOption) {
         mCurrentPage = 1;
@@ -37,6 +42,9 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
         mNetworkRequests.makeNetworkRequest(sortOption, mCurrentPage);
     }
 
+    /**
+     * For pagination. Makes additional requests when the user reaches the end of the data available
+     */
     @Override
     public void loadMoreData() {
         mIsLoading = true;
@@ -52,6 +60,12 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
         this.mSortOption = sortOption;
     }
 
+    /**
+     * Flag to indicate whether more data is currently being loaded. If it is, ignore other
+     * requests for more data.
+     *
+     * @return
+     */
     public boolean isLoading() {
         return mIsLoading;
     }
@@ -72,6 +86,15 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
         return PAGE_SIZE;
     }
 
+    /**
+     * When the activity has been destroyed, for example, device rotation, this method is called to
+     * restore the state of the presenter
+     *
+     * @param movieList   - The list of movies the user was currently viewing
+     * @param currentPage - The current page that was fetched
+     * @param totalPages  - The total number of pages available
+     * @param sortOption  - The sort option the user was on
+     */
     public void onRestore(ArrayList<Movie> movieList, int currentPage, int totalPages,
                           String sortOption) {
         this.mMovieList = movieList;
@@ -84,12 +107,21 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
         return (ArrayList<Movie>) mMovieList;
     }
 
+    /**
+     * Callback for initial data. Get the list of movies and pass
+     * it to the UI for display making sure to clear the previous data
+     * (ex. switched from Most Popular to Top rated. Clear most popular and add Top Rated).
+     *
+     * @param movieData - Original data object retrieved from network request
+     */
     @Override
     public void onMovieSuccess(MovieData movieData) {
-        mIsLoading = false;
-        mTotalPages = movieData.getTotalPages();
-        mMovieList.clear();
-        mMovieList = movieData.getMovies();
+        if (movieData != null) {
+            mIsLoading = false;
+            mTotalPages = movieData.getTotalPages();
+            mMovieList.clear();
+            mMovieList = movieData.getMovies();
+        }
         mMainActivityView.onMovieSuccess(mMovieList);
     }
 
@@ -99,6 +131,11 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
         mMainActivityView.onFailure(message);
     }
 
+    /**
+     * Callback for pagination requests. Appends the new movies to the current List
+     *
+     * @param movieData - Original data object retrieved from network request
+     */
     @Override
     public void onMovieUpdate(MovieData movieData) {
         mCurrentPage++;

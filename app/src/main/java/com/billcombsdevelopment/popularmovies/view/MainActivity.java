@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
         // Found at https://stackoverflow.com/questions/4761686/how-to-set-background-color-of-an-activity-to-white-programmatically
         getWindow().getDecorView().setBackgroundColor(Color.BLACK);
 
-        // Toolbar and sorting spinner setup
+        // Toolbar and sorting spinner initialization
         Toolbar toolbar = findViewById(R.id.main_toolbar);
         toolbar.setTitle(R.string.app_name);
         mSpinner = findViewById(R.id.main_spinner);
@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
         // Set to default sorting option
         mPresenter.setSortOption(getResources().getString(R.string.most_popular));
 
+        // Spinner setup
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this,
                 R.layout.spinner_item,
                 getResources().getStringArray(R.array.sort_options_array));
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
                 String sortOption = mSpinner.getSelectedItem().toString();
-                // Check is to prevent initial HTTP request on Listener initialization
+                // This check is to prevent initial HTTP request on Listener initialization
                 if (sortOption.equals(mPresenter.getSortOption())) {
                     return;
                 }
@@ -145,6 +146,11 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
         }
     }
 
+    /**
+     * Callback for initial movie data load
+     *
+     * @param movieList
+     */
     @Override
     public void onMovieSuccess(List<Movie> movieList) {
         mRecyclerAdapter.setMovieList(movieList);
@@ -152,6 +158,11 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
         mRecyclerAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Callback for subsequent requests for pagination
+     *
+     * @param movieList
+     */
     @Override
     public void onUpdate(List<Movie> movieList) {
         mRecyclerAdapter.setMovieList(movieList);
@@ -179,6 +190,9 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
         Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Click listener for RecyclerView
+     */
     public interface OnItemClickListener {
         void onItemClick(Movie movie, View view);
     }

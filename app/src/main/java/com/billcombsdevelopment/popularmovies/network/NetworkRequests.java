@@ -32,6 +32,12 @@ public class NetworkRequests {
         this.mDetailListener = detailListener;
     }
 
+    /**
+     * Makes the initial request for movies displayed in MainActivity
+     *
+     * @param sortOption - Most Popular or Top Rated
+     * @param pageNumber - In the initial request it will always be 1
+     */
     public void makeNetworkRequest(String sortOption, int pageNumber) {
         Retrofit client = RetrofitClient.getRetrofitClient();
 
@@ -65,6 +71,13 @@ public class NetworkRequests {
         });
     }
 
+    /**
+     * For pagination. This makes additional network requests for MainActivity movies when the user
+     * reaches the end of the data currently available.
+     *
+     * @param sortOption - Most Popular or Top Rated
+     * @param pageNumber - The page number to fetch
+     */
     public void additionalRequest(String sortOption, int pageNumber) {
         Retrofit client = RetrofitClient.getRetrofitClient();
 
@@ -99,6 +112,11 @@ public class NetworkRequests {
         });
     }
 
+    /**
+     * Requests movie trailers for the movie currently being viewed in DetailActivity
+     *
+     * @param movieId - The id of the movie from themoviedb.org
+     */
     public void trailerRequest(String movieId) {
         Retrofit client = RetrofitClient.getRetrofitClient();
 
@@ -122,6 +140,11 @@ public class NetworkRequests {
         });
     }
 
+    /**
+     * Requests reviews for the movie currently being viewed in DetailActivity
+     *
+     * @param movieId - The id of the movie from themoviedb.org
+     */
     public void reviewRequest(String movieId) {
         Retrofit client = RetrofitClient.getRetrofitClient();
 
