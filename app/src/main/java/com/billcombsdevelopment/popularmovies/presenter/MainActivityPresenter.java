@@ -116,8 +116,9 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
      */
     @Override
     public void onMovieSuccess(MovieData movieData) {
+        mIsLoading = false;
+
         if (movieData != null) {
-            mIsLoading = false;
             mTotalPages = movieData.getTotalPages();
             mMovieList.clear();
             mMovieList = movieData.getMovies();
