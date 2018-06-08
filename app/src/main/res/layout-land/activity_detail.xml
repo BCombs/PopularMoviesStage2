@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/detail_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20dp">
+
+            <!-- BEGIN MAIN OVERVIEW SECTION -->
+            <ImageView
+                android:id="@+id/background_poster_iv"
+                style="@style/DetailImageView"
+                android:layout_width="match_parent"
+                android:alpha="0.3"
+                android:contentDescription="@string/poster_content_description"
+                android:foreground="@drawable/backdrop_gradient"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/main_poster_iv"
+                style="@style/DetailImageView"
+                android:layout_width="240dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="16dp"
+                android:contentDescription="@string/poster_content_description"
+                android:transitionName="@string/movie_poster_transition"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.018"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <LinearLayout
+                android:id="@+id/linear_layout"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.458"
+                app:layout_constraintStart_toEndOf="@+id/main_poster_iv"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/movie_title_tv"
+                    style="@style/DetailTextView"
+                    android:layout_gravity="center"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    tools:text="Movie Title" />
+
+                <TextView
+                    android:id="@+id/release_year_tv"
+                    style="@style/DetailTextView"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="10dp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <RatingBar
+                        android:id="@+id/rating_bar"
+                        style="?attr/ratingBarStyleSmall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:isIndicator="true"
+                        android:numStars="5"
+                        android:stepSize="0.1"
+                        android:theme="@style/RatingBar"
+                        tools:rating="2.5" />
+
+                    <TextView
+                        android:id="@+id/total_ratings_tv"
+                        style="@style/DetailTextView"
+                        android:paddingLeft="2dp"
+                        android:paddingRight="2dp" />
+
+                </LinearLayout>
+
+                <ImageButton
+                    android:id="@+id/favorites_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:alpha="0.3"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/favorite_btn_content_desc"
+                    android:src="@drawable/heart_off" />
+
+            </LinearLayout>
+
+            <android.support.constraint.Barrier
+                android:id="@+id/barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="main_poster_iv, linear_layout" />
+
+            <TextView
+                android:id="@+id/movie_synopsis_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/detailFontColor"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/barrier" />
+            <!-- END MAIN OVERVIEW SECTION -->
+
+            <!-- BEGIN MOVIE TRAILER SECTION -->
+            <View
+                android:id="@+id/trailer_divider"
+                style="@style/Divider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/movie_synopsis_tv" />
+
+            <TextView
+                android:id="@+id/trailer_teaser_header_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:alpha="0.5"
+                android:paddingLeft="10dp"
+                android:text="@string/trailers_and_teasers_header"
+                android:textAllCaps="true"
+                android:textColor="@color/detailFontColor"
+                android:textSize="14sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/trailer_divider" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/trailer_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/trailer_teaser_header_tv" />
+
+            <!-- END MOVIE TRAILER SECTION -->
+
+            <android.support.constraint.Barrier
+                android:id="@+id/trailer_barrier"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:barrierAllowsGoneWidgets="false"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="trailer_rv, movie_synopsis_tv" />
+
+            <!-- BEGIN MOVIE REVIEW SECTION -->
+            <View
+                android:id="@+id/review_divider"
+                style="@style/Divider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/trailer_barrier" />
+
+            <TextView
+                android:id="@+id/review_header_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:alpha="0.5"
+                android:paddingLeft="10dp"
+                android:text="@string/reviews_header"
+                android:textAllCaps="true"
+                android:textColor="@color/detailFontColor"
+                android:textSize="14sp"
+                app:layout_constraintTop_toBottomOf="@id/review_divider" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/review_rv"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/review_header_tv" />
+            <!-- END MOVIE REVIEW SECTION -->
+
+        </android.support.constraint.ConstraintLayout>
+    </android.support.v4.widget.NestedScrollView>
+</LinearLayout>

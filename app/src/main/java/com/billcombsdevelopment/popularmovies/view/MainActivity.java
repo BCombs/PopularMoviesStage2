@@ -5,6 +5,7 @@
 package com.billcombsdevelopment.popularmovies.view;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,7 +31,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements PopularMoviesContract.View {
 
-    private final GridLayoutManager mGridLayoutManager = new GridLayoutManager(this, 2);
+    private GridLayoutManager mGridLayoutManager;
     private Spinner mSpinner;
     private RecyclerView mRecyclerView;
     private MovieListAdapter mRecyclerAdapter;
@@ -78,6 +79,13 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
 
             }
         });
+
+        // Get the orientation and set GridLayoutManager span accordingly
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mGridLayoutManager = new GridLayoutManager(this, 2);
+        } else {
+            mGridLayoutManager = new GridLayoutManager(this, 4);
+        }
 
         // RecyclerView setup
         mRecyclerView = findViewById(R.id.movie_list_rv);
