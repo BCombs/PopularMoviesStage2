@@ -24,7 +24,6 @@ android {
 }
 
 dependencies {
-    def paging_version = '1.0.0'
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:27.1.1'
@@ -47,7 +46,4 @@ dependencies {
 
     // JSON Converter
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
-
-    // Android Paging
-    implementation "android.arch.paging:runtime:$paging_version"
 }

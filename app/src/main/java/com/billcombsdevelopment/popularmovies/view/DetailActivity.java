@@ -17,6 +17,7 @@ import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -80,8 +81,19 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
         mTrailerTeaserHeaderTv = findViewById(R.id.trailer_teaser_header_tv);
         mReviewHeaderTv = findViewById(R.id.review_header_tv);
 
-        Movie movie = getIntent().getParcelableExtra("movie");
-        mPresenter = new DetailActivityPresenter(movie, this);
+        final Movie movie = getIntent().getParcelableExtra("movie");
+        mPresenter = new DetailActivityPresenter(movie, this, getApplicationContext());
+
+        // Check if the movie is a favorite
+        boolean queryIsFavorite = mPresenter.queryIsFavorite(movie.getId());
+        Log.d("DetailActivity", "Checking if favorite: " + queryIsFavorite);
+        if (queryIsFavorite) {
+            favoritesBtn.setImageResource(R.drawable.heart_clicked);
+            favoritesBtn.setAlpha(1.0f);
+        } else {
+            favoritesBtn.setImageResource(R.drawable.heart_off);
+            favoritesBtn.setAlpha(0.3f);
+        }
 
         // Load movie trailers
         mPresenter.loadTrailerData(mPresenter.getMovieId());
@@ -96,7 +108,7 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
             @Override
             public void onClick(View v) {
                 if (mPresenter.isFavorite()) {
-                    mPresenter.removeFromFavorites();
+                    mPresenter.deleteFromFavorites(movie.getId());
                     favoritesBtn.setImageResource(R.drawable.heart_off);
                     favoritesBtn.setAlpha(0.3f);
                     if (mToast != null) {
@@ -115,6 +127,8 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
                     if (mToast != null) {
                         mToast.cancel();
                     }
+
+                    mPresenter.addToFavorites(movie);
 
                     String message = mPresenter.getMovieTitle() + " " +
                             getResources().getString(R.string.added_to_favorites);
@@ -218,7 +232,7 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
 
     @Override
     public void onTrailerSuccess(List<MovieTrailer> trailerList) {
-        // There were no trailers. Inform the user
+        // There were no trailers. Remove the trailer section
         if (trailerList.isEmpty()) {
             removeTrailerSection();
             return;
@@ -230,7 +244,7 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
 
     @Override
     public void onReviewSuccess(List<MovieReview> movieReviews) {
-        // There were no reviews. Inform the user
+        // There were no reviews. Remove the Review section
         if (movieReviews.isEmpty()) {
             removeReviewSection();
             return;

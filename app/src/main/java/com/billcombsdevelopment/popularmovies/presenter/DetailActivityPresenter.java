@@ -4,10 +4,14 @@
 
 package com.billcombsdevelopment.popularmovies.presenter;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.util.Log;
 
 import com.billcombsdevelopment.popularmovies.R;
+import com.billcombsdevelopment.popularmovies.database.FavoritesDbContract.MovieEntry;
 import com.billcombsdevelopment.popularmovies.model.Movie;
 import com.billcombsdevelopment.popularmovies.model.MovieReview;
 import com.billcombsdevelopment.popularmovies.model.MovieReviewData;
@@ -25,14 +29,21 @@ import java.util.Locale;
 
 public class DetailActivityPresenter implements PopularMoviesContract.DetailPresenter,
         PopularMoviesContract.DetailDataListener {
+
+    private static final String TAG = DetailActivityPresenter.class.getSimpleName();
     private final PopularMoviesContract.DetailView mDetailView;
     private final NetworkRequests mNetworkRequests;
     private final Movie mMovie;
     private boolean mIsFavorite = false;
 
-    public DetailActivityPresenter(Movie movie, PopularMoviesContract.DetailView detailView) {
+    // TEMPORARY UNTIL DAGGER 2 DEPENDENCY INJECTION
+    private Context mContext;
+
+    public DetailActivityPresenter(Movie movie, PopularMoviesContract.DetailView detailView,
+                                   Context context) {
         this.mMovie = movie;
         mDetailView = detailView;
+        mContext = context;
         mNetworkRequests = new NetworkRequests(this);
     }
 
@@ -97,15 +108,58 @@ public class DetailActivityPresenter implements PopularMoviesContract.DetailPres
         return "(" + count + " " + totalRatings + ")";
     }
 
+    public void addToFavorites(Movie movie) {
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(MovieEntry.COLUMN_NAME_MOVIE_ID, movie.getId());
+        contentValues.put(MovieEntry.COLUMN_NAME_TITLE, movie.getTitle());
+        contentValues.put(MovieEntry.COLUMN_NAME_POSTER_PATH, movie.getPosterPath());
+        contentValues.put(MovieEntry.COLUMN_NAME_BACKDROP_PATH, movie.getBackdropPath());
+        contentValues.put(MovieEntry.COLUMN_NAME_SYNOPSIS, movie.getSynopsis());
+        contentValues.put(MovieEntry.COLUMN_NAME_RELEASE_DATE, movie.getReleaseDate());
+        contentValues.put(MovieEntry.COLUMN_NAME_VOTE_AVERAGE, movie.getUserRating());
+        contentValues.put(MovieEntry.COLUMN_NAME_VOTE_COUNT, movie.getVoteCount());
+
+        Log.d("ContentValues", contentValues.getAsString(MovieEntry.COLUMN_NAME_TITLE));
+
+        Uri uri = mContext.getContentResolver().insert(MovieEntry.CONTENT_URI, contentValues);
+        Log.d(TAG, "Added " + uri);
+    }
+
+    public void deleteFromFavorites(Integer movieId) {
+        Uri uri = MovieEntry.CONTENT_URI;
+        uri = uri.buildUpon().appendPath(movieId.toString()).build();
+        String where = MovieEntry.COLUMN_NAME_MOVIE_ID + "=?";
+        String[] selectionArgs = {movieId.toString()};
+        int deletedRow = mContext.getContentResolver().delete(uri, where, selectionArgs);
+        Log.d("deleteFromFavorites", "Deleted : " + deletedRow + " row/s.");
+    }
+
     public void setAsFavorite() {
         mIsFavorite = true;
     }
 
-    public void removeFromFavorites() {
-        mIsFavorite = false;
+    public boolean isFavorite() {
+        return mIsFavorite;
     }
 
-    public boolean isFavorite() {
+    public boolean queryIsFavorite(Integer movieId) {
+        Uri uri = MovieEntry.CONTENT_URI;
+        uri = uri.buildUpon().appendPath(movieId.toString()).build();
+        Cursor cursor = mContext.getContentResolver()
+                .query(uri,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null);
+
+        if (cursor.getCount() > 0) {
+            mIsFavorite = true;
+        } else {
+            mIsFavorite = false;
+        }
+
         return mIsFavorite;
     }
 
@@ -127,7 +181,7 @@ public class DetailActivityPresenter implements PopularMoviesContract.DetailPres
          * If trailerData is null (502 Bad Gateway response for example) return the empty list to
          * hide the trailer section from the UI.
          */
-        if(trailerData != null) {
+        if (trailerData != null) {
             trailerList = trailerData.getMovieTrailers();
         }
         mDetailView.onTrailerSuccess(trailerList);
@@ -141,7 +195,7 @@ public class DetailActivityPresenter implements PopularMoviesContract.DetailPres
          * hide the review section from the UI.
          */
         List<MovieReview> movieReviews = new ArrayList<>();
-        if(reviewData != null) {
+        if (reviewData != null) {
             movieReviews = reviewData.getMovieReviews();
         }
         mDetailView.onReviewSuccess(movieReviews);

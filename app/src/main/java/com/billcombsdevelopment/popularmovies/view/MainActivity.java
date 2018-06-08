@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
         mSpinner = findViewById(R.id.main_spinner);
 
         // Initialize Presenter
-        mPresenter = new MainActivityPresenter(this);
+        mPresenter = new MainActivityPresenter(this, getApplicationContext());
         // Set to default sorting option
         mPresenter.setSortOption(getResources().getString(R.string.most_popular));
 
@@ -153,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
      */
     @Override
     public void onMovieSuccess(List<Movie> movieList) {
+        Log.d("onMovieSuccess", "Movie List Size: " + movieList.size());
         mRecyclerAdapter.setMovieList(movieList);
         mRecyclerView.scrollToPosition(0);
         mRecyclerAdapter.notifyDataSetChanged();
@@ -173,6 +175,15 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
     protected void onPause() {
         mLayoutManagerState = mGridLayoutManager.onSaveInstanceState();
         super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mPresenter.getSortOption().equals(getResources().getString(R.string.favorites))) {
+            String sortOption = mPresenter.getSortOption();
+            mPresenter.loadMovieData(sortOption);
+        }
     }
 
     @Override

@@ -3,7 +3,6 @@
     package="com.billcombsdevelopment.popularmovies">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -28,6 +27,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".view.MainActivity" />
         </activity>
+
+        <provider
+            android:name=".database.FavoritesProvider"
+            android:authorities="com.billcombsdevelopment.popularmovies"
+            android:exported="false" />
     </application>
 
 </manifest>
