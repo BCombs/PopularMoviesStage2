@@ -7,7 +7,6 @@ package com.billcombsdevelopment.popularmovies.database;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -100,10 +99,8 @@ public class FavoritesProvider extends ContentProvider {
                     db.endTransaction();
                 }
 
-                Context context = getContext();
-                if (context != null) {
-                    context.getContentResolver().notifyChange(uri, null);
-                }
+                getContext().getContentResolver().notifyChange(uri, null);
+
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Uri: " + uri);
@@ -120,6 +117,7 @@ public class FavoritesProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case MOVIE_ID:
                 deleted = db.delete(MovieEntry.TABLE_NAME, selection, selectionArgs);
+                getContext().getContentResolver().notifyChange(uri, null);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Uri: " + uri);

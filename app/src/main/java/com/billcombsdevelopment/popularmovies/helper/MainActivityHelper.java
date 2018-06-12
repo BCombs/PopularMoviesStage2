@@ -2,12 +2,14 @@
  * Copyright (C) 2018 Bill Combs
  */
 
-package com.billcombsdevelopment.popularmovies.presenter;
+package com.billcombsdevelopment.popularmovies.helper;
 
-import android.content.Context;
+import android.content.ContentResolver;
+import android.database.ContentObserver;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
-import android.util.Log;
+import android.os.Handler;
 
 import com.billcombsdevelopment.popularmovies.database.FavoritesDbContract;
 import com.billcombsdevelopment.popularmovies.model.Movie;
@@ -18,7 +20,7 @@ import com.billcombsdevelopment.popularmovies.view.PopularMoviesContract;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivityPresenter implements PopularMoviesContract.Presenter,
+public class MainActivityHelper implements PopularMoviesContract.Presenter,
         PopularMoviesContract.MovieDataListener {
 
     private final PopularMoviesContract.View mMainActivityView;
@@ -32,13 +34,13 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
     private int mCurrentPage = 1;
     private int mTotalPages = 1;
     private String mCurrentSortOption = "";
+    private MovieObserver mObserver;
+    private ContentResolver mResolver;
 
-    // TEMPORARY UNTIL DAGGER 2 DEPENDENCY INJECTION
-    private Context mContext;
-
-    public MainActivityPresenter(PopularMoviesContract.View view, Context context) {
+    public MainActivityHelper(PopularMoviesContract.View view, ContentResolver resolver) {
         mMainActivityView = view;
-        mContext = context;
+        mResolver = resolver;
+        mObserver = new MovieObserver(new Handler());
         mNetworkRequests = new NetworkRequests(this);
     }
 
@@ -116,6 +118,15 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
         return PAGE_SIZE;
     }
 
+    public void registerObserver() {
+        mResolver.registerContentObserver(FavoritesDbContract.MovieEntry.CONTENT_URI,
+                true, mObserver);
+    }
+
+    public void unregisterObserver() {
+        mResolver.unregisterContentObserver(mObserver);
+    }
+
     /**
      * When the activity has been destroyed, for example, device rotation, this method is called to
      * restore the state of the presenter
@@ -177,6 +188,28 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
     }
 
     /**
+     * Observes changes in the content provider and updates data on change
+     */
+    class MovieObserver extends ContentObserver {
+        MovieObserver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            this.onChange(selfChange, null);
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            // If we are currently viewing Favorites, update it
+            if (mCurrentSortOption.equals(FAVORITES)) {
+                new FavoritesQueryTask().execute();
+            }
+        }
+    }
+
+    /**
      * AsyncTask to fetch data from the database
      */
     class FavoritesQueryTask extends AsyncTask<Void, Void, List<Movie>> {
@@ -185,15 +218,13 @@ public class MainActivityPresenter implements PopularMoviesContract.Presenter,
         protected List<Movie> doInBackground(Void... voids) {
             List<Movie> favoritesList = new ArrayList<>();
 
-            Cursor cursor = mContext.getContentResolver()
+            Cursor cursor = mResolver
                     .query(FavoritesDbContract.MovieEntry.CONTENT_URI,
                             null,
                             null,
                             null,
                             null,
                             null);
-
-            Log.d("doInBackground Cursor", "Number of rows in cursor: " + cursor.getCount());
 
             try {
                 while (cursor.moveToNext()) {

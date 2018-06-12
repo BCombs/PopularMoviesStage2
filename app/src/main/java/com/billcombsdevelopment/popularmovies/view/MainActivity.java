@@ -4,6 +4,7 @@
 
 package com.billcombsdevelopment.popularmovies.view;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -15,7 +16,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,8 +23,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.billcombsdevelopment.popularmovies.R;
+import com.billcombsdevelopment.popularmovies.helper.MainActivityHelper;
 import com.billcombsdevelopment.popularmovies.model.Movie;
-import com.billcombsdevelopment.popularmovies.presenter.MainActivityPresenter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
     private Spinner mSpinner;
     private RecyclerView mRecyclerView;
     private MovieListAdapter mRecyclerAdapter;
-    private MainActivityPresenter mPresenter;
+    private MainActivityHelper mHelper;
     private Parcelable mLayoutManagerState;
 
     @Override
@@ -52,9 +52,16 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
         mSpinner = findViewById(R.id.main_spinner);
 
         // Initialize Presenter
-        mPresenter = new MainActivityPresenter(this, getApplicationContext());
+        ContentResolver resolver = getContentResolver();
+        mHelper = new MainActivityHelper(this, resolver);
         // Set to default sorting option
-        mPresenter.setSortOption(getResources().getString(R.string.most_popular));
+        mHelper.setSortOption(getResources().getString(R.string.most_popular));
+
+        /*
+         * Registering observer in onCreate() and unregistering in onDestroy() so we can still
+         * detect changes to the database when MainActivity is in onPause()
+         */
+        mHelper.registerObserver();
 
         // Spinner setup
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this,
@@ -68,10 +75,10 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
 
                 String sortOption = mSpinner.getSelectedItem().toString();
                 // This check is to prevent initial HTTP request on Listener initialization
-                if (sortOption.equals(mPresenter.getSortOption())) {
+                if (sortOption.equals(mHelper.getSortOption())) {
                     return;
                 }
-                mPresenter.loadMovieData(sortOption);
+                mHelper.loadMovieData(sortOption);
             }
 
             @Override
@@ -128,11 +135,11 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
                 int firstVisibleItemPos =
                         mGridLayoutManager.findFirstCompletelyVisibleItemPosition();
 
-                if (!mPresenter.isLoading() && !mPresenter.isLastPage()) {
+                if (!mHelper.isLoading() && !mHelper.isLastPage()) {
                     if ((visibleItemCount + firstVisibleItemPos) >= totalItemCount
                             && firstVisibleItemPos >= 0
-                            && totalItemCount >= mPresenter.getPageSize()) {
-                        mPresenter.loadMoreData();
+                            && totalItemCount >= mHelper.getPageSize()) {
+                        mHelper.loadMoreData();
                     }
                 }
             }
@@ -145,13 +152,13 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
             String sortOption = savedInstanceState.getString("sortOption");
             mLayoutManagerState = savedInstanceState.getParcelable("layoutManagerState");
 
-            mPresenter.onRestore(movieList, currentPage, totalPages, sortOption);
+            mHelper.onRestore(movieList, currentPage, totalPages, sortOption);
             mRecyclerView.invalidate();
             mRecyclerAdapter.setMovieList(movieList);
             mRecyclerAdapter.notifyDataSetChanged();
             mGridLayoutManager.onRestoreInstanceState(mLayoutManagerState);
         } else {
-            mPresenter.loadMovieData(mPresenter.getSortOption());
+            mHelper.loadMovieData(mHelper.getSortOption());
         }
     }
 
@@ -162,7 +169,6 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
      */
     @Override
     public void onMovieSuccess(List<Movie> movieList) {
-        Log.d("onMovieSuccess", "Movie List Size: " + movieList.size());
         mRecyclerAdapter.setMovieList(movieList);
         mRecyclerView.scrollToPosition(0);
         mRecyclerAdapter.notifyDataSetChanged();
@@ -186,21 +192,18 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (mPresenter.getSortOption().equals(getResources().getString(R.string.favorites))) {
-            String sortOption = mPresenter.getSortOption();
-            mPresenter.loadMovieData(sortOption);
-        }
+    protected void onDestroy() {
+        super.onDestroy();
+        mHelper.unregisterObserver();
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("movieList", mPresenter.getMovieList());
-        outState.putInt("totalPages", mPresenter.getTotalPages());
-        outState.putInt("currentPage", mPresenter.getCurrentPage());
-        outState.putString("sortOption", mPresenter.getSortOption());
+        outState.putParcelableArrayList("movieList", mHelper.getMovieList());
+        outState.putInt("totalPages", mHelper.getTotalPages());
+        outState.putInt("currentPage", mHelper.getCurrentPage());
+        outState.putString("sortOption", mHelper.getSortOption());
         outState.putParcelable("layoutManagerState", mLayoutManagerState);
     }
 

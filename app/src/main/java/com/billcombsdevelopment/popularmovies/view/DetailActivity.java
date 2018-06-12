@@ -17,7 +17,6 @@ import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -27,10 +26,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.billcombsdevelopment.popularmovies.R;
+import com.billcombsdevelopment.popularmovies.helper.DetailActivityHelper;
 import com.billcombsdevelopment.popularmovies.model.Movie;
 import com.billcombsdevelopment.popularmovies.model.MovieReview;
 import com.billcombsdevelopment.popularmovies.model.MovieTrailer;
-import com.billcombsdevelopment.popularmovies.presenter.DetailActivityPresenter;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -38,7 +37,7 @@ import java.util.List;
 public class DetailActivity extends AppCompatActivity implements PopularMoviesContract.DetailView {
 
     private final Toast mToast = null;
-    private DetailActivityPresenter mPresenter;
+    private DetailActivityHelper mPresenter;
     private RecyclerView mTrailerRv;
     private RecyclerView mReviewRv;
     private View mTrailerDivider;
@@ -82,11 +81,10 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
         mReviewHeaderTv = findViewById(R.id.review_header_tv);
 
         final Movie movie = getIntent().getParcelableExtra("movie");
-        mPresenter = new DetailActivityPresenter(movie, this, getApplicationContext());
+        mPresenter = new DetailActivityHelper(movie, this, getApplicationContext());
 
         // Check if the movie is a favorite
         boolean queryIsFavorite = mPresenter.queryIsFavorite(movie.getId());
-        Log.d("DetailActivity", "Checking if favorite: " + queryIsFavorite);
         if (queryIsFavorite) {
             favoritesBtn.setImageResource(R.drawable.heart_clicked);
             favoritesBtn.setAlpha(1.0f);

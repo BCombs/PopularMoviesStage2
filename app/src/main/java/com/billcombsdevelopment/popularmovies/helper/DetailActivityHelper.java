@@ -2,7 +2,7 @@
  * Copyright (C) 2018 Bill Combs
  */
 
-package com.billcombsdevelopment.popularmovies.presenter;
+package com.billcombsdevelopment.popularmovies.helper;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -27,10 +27,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class DetailActivityPresenter implements PopularMoviesContract.DetailPresenter,
+public class DetailActivityHelper implements PopularMoviesContract.DetailPresenter,
         PopularMoviesContract.DetailDataListener {
 
-    private static final String TAG = DetailActivityPresenter.class.getSimpleName();
+    private static final String TAG = DetailActivityHelper.class.getSimpleName();
     private final PopularMoviesContract.DetailView mDetailView;
     private final NetworkRequests mNetworkRequests;
     private final Movie mMovie;
@@ -39,8 +39,8 @@ public class DetailActivityPresenter implements PopularMoviesContract.DetailPres
     // TEMPORARY UNTIL DAGGER 2 DEPENDENCY INJECTION
     private Context mContext;
 
-    public DetailActivityPresenter(Movie movie, PopularMoviesContract.DetailView detailView,
-                                   Context context) {
+    public DetailActivityHelper(Movie movie, PopularMoviesContract.DetailView detailView,
+                                Context context) {
         this.mMovie = movie;
         mDetailView = detailView;
         mContext = context;
