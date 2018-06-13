@@ -18,7 +18,7 @@ import java.util.List;
 
 public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.ViewHolder> {
 
-    DetailActivity.OnReviewClickListener mListener;
+    private final DetailActivity.OnReviewClickListener mListener;
     private List<MovieReview> mMovieReviews;
 
     ReviewListAdapter(DetailActivity.OnReviewClickListener listener) {
@@ -53,8 +53,8 @@ public class ReviewListAdapter extends RecyclerView.Adapter<ReviewListAdapter.Vi
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView mAuthorTv;
-        private TextView mContentTv;
+        private final TextView mAuthorTv;
+        private final TextView mContentTv;
 
         ViewHolder(View itemView) {
             super(itemView);

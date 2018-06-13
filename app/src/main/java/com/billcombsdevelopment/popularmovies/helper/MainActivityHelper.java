@@ -20,8 +20,7 @@ import com.billcombsdevelopment.popularmovies.view.PopularMoviesContract;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivityHelper implements PopularMoviesContract.Presenter,
-        PopularMoviesContract.MovieDataListener {
+public class MainActivityHelper implements PopularMoviesContract.MovieDataListener {
 
     private final PopularMoviesContract.View mMainActivityView;
     private final NetworkRequests mNetworkRequests;
@@ -34,8 +33,8 @@ public class MainActivityHelper implements PopularMoviesContract.Presenter,
     private int mCurrentPage = 1;
     private int mTotalPages = 1;
     private String mCurrentSortOption = "";
-    private MovieObserver mObserver;
-    private ContentResolver mResolver;
+    private final MovieObserver mObserver;
+    private final ContentResolver mResolver;
 
     public MainActivityHelper(PopularMoviesContract.View view, ContentResolver resolver) {
         mMainActivityView = view;
@@ -49,7 +48,7 @@ public class MainActivityHelper implements PopularMoviesContract.Presenter,
      *
      * @param sortOption - Most Popular, Top Rated, Favorites
      */
-    @Override
+
     public void loadMovieData(String sortOption) {
         switch (sortOption) {
             case MOST_POPULAR:
@@ -77,7 +76,7 @@ public class MainActivityHelper implements PopularMoviesContract.Presenter,
     /**
      * For pagination. Makes additional requests when the user reaches the end of the data available
      */
-    @Override
+
     public void loadMoreData() {
         mIsLoading = true;
         mCurrentPage++;
@@ -96,7 +95,7 @@ public class MainActivityHelper implements PopularMoviesContract.Presenter,
      * Flag to indicate whether more data is currently being loaded. If it is, ignore other
      * requests for more data.
      *
-     * @return
+     * @return mIsLoading
      */
     public boolean isLoading() {
         return mIsLoading;
@@ -218,15 +217,13 @@ public class MainActivityHelper implements PopularMoviesContract.Presenter,
         protected List<Movie> doInBackground(Void... voids) {
             List<Movie> favoritesList = new ArrayList<>();
 
-            Cursor cursor = mResolver
+            try (Cursor cursor = mResolver
                     .query(FavoritesDbContract.MovieEntry.CONTENT_URI,
                             null,
                             null,
                             null,
                             null,
-                            null);
-
-            try {
+                            null)) {
                 while (cursor.moveToNext()) {
                     favoritesList.add(new Movie(
                             cursor.getInt(cursor.getColumnIndex(FavoritesDbContract.MovieEntry.COLUMN_NAME_MOVIE_ID)),
@@ -239,8 +236,6 @@ public class MainActivityHelper implements PopularMoviesContract.Presenter,
                             cursor.getInt(cursor.getColumnIndex(FavoritesDbContract.MovieEntry.COLUMN_NAME_VOTE_COUNT))
                     ));
                 }
-            } finally {
-                cursor.close();
             }
 
             return favoritesList;

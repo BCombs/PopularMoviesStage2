@@ -26,12 +26,6 @@ public interface PopularMoviesContract {
         void onUpdate(List<Movie> movieList);
     }
 
-    interface Presenter {
-        void loadMovieData(String sortOption);
-
-        void loadMoreData();
-    }
-
     interface MovieDataListener {
         void onMovieSuccess(MovieData movieData);
 
@@ -46,12 +40,6 @@ public interface PopularMoviesContract {
         void onReviewSuccess(List<MovieReview> movieReviews);
 
         void onFailure(String message);
-    }
-
-    interface DetailPresenter {
-        void loadTrailerData(String movieId);
-
-        void loadReviewData(String movieId);
     }
 
     interface DetailDataListener {

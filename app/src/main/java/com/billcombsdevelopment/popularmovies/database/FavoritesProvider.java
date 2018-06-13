@@ -19,8 +19,8 @@ import com.billcombsdevelopment.popularmovies.database.FavoritesDbContract.Movie
 
 public class FavoritesProvider extends ContentProvider {
 
-    public static final int MOVIE = 1;
-    public static final int MOVIE_ID = 2;
+    private static final int MOVIE = 1;
+    private static final int MOVIE_ID = 2;
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
@@ -28,7 +28,7 @@ public class FavoritesProvider extends ContentProvider {
         sUriMatcher.addURI(FavoritesDbContract.AUTHORITY, MovieEntry.TABLE_NAME + "/#", MOVIE_ID);
     }
 
-    FavoritesDbHelper favoritesDbHelper;
+    private FavoritesDbHelper favoritesDbHelper;
 
     @Override
     public boolean onCreate() {
@@ -70,7 +70,9 @@ public class FavoritesProvider extends ContentProvider {
                 null,
                 sortOrder);
 
-        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        if(getContext() != null) {
+            cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        }
 
         return cursor;
     }
@@ -99,7 +101,9 @@ public class FavoritesProvider extends ContentProvider {
                     db.endTransaction();
                 }
 
-                getContext().getContentResolver().notifyChange(uri, null);
+                if(getContext() != null) {
+                    getContext().getContentResolver().notifyChange(uri, null);
+                }
 
                 break;
             default:
@@ -117,7 +121,9 @@ public class FavoritesProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case MOVIE_ID:
                 deleted = db.delete(MovieEntry.TABLE_NAME, selection, selectionArgs);
-                getContext().getContentResolver().notifyChange(uri, null);
+                if(getContext() != null) {
+                    getContext().getContentResolver().notifyChange(uri, null);
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Unknown Uri: " + uri);

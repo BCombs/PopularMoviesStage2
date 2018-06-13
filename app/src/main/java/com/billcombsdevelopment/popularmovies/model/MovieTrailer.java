@@ -33,7 +33,7 @@ public class MovieTrailer implements Parcelable {
     private final String mName;
     @SerializedName("type")
     @Expose
-    private String mType;
+    private final String mType;
 
     public MovieTrailer(String id, String key, String name, String type) {
         this.mId = id;

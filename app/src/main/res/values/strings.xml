@@ -23,8 +23,13 @@
     <!-- Content Description for Favorite button -->
     <string name="favorite_btn_content_desc">Favorite Button</string>
 
+    <!-- Content Description for Trailers -->
+    <string name="trailer_thumb_content_desc">Preview Image of Trailer</string>
+
+    <!-- Content Description for trailer Play Button image -->
+    <string name="trailer_play_content_desc">Image of Play Button</string>
+
     <!-- Used for total rating count in detail activity -->
-    <string name="total_ratings">ratings</string>
 
     <!-- Used for toast letting user know movie was added to favorites -->
     <string name="added_to_favorites">added to favorites</string>
@@ -43,5 +48,8 @@
 
     <!-- Transition name for movie poster -->
     <string name="movie_poster_transition">movie_poster_transition</string>
+
+    <!-- Total Ratings -->
+    <string name="total_ratings">(%1$d ratings)</string>
 
 </resources>

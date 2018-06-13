@@ -21,16 +21,16 @@ public class MovieReview implements Parcelable {
     };
     @SerializedName("author")
     @Expose
-    private String mAuthor;
+    private final String mAuthor;
     @SerializedName("content")
     @Expose
-    private String mContent;
+    private final String mContent;
     @SerializedName("id")
     @Expose
-    private String mId;
+    private final String mId;
     @SerializedName("url")
     @Expose
-    private String mUrl;
+    private final String mUrl;
 
     public MovieReview(String author, String content, String id, String url) {
         this.mAuthor = author;
@@ -39,7 +39,7 @@ public class MovieReview implements Parcelable {
         this.mUrl = url;
     }
 
-    protected MovieReview(Parcel in) {
+    private MovieReview(Parcel in) {
         mAuthor = in.readString();
         mContent = in.readString();
         mId = in.readString();

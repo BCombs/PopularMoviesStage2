@@ -10,7 +10,7 @@ import android.provider.BaseColumns;
 public final class FavoritesDbContract {
 
     public static final String AUTHORITY = "com.billcombsdevelopment.popularmovies";
-    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
+    private static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
     // Prevent instantiation
     private FavoritesDbContract() {

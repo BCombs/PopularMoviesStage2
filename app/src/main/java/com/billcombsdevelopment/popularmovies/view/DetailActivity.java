@@ -108,7 +108,7 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
             mHelper.setReviewList(reviewList);
 
             // If there are no trailers, remove that section from the UI
-            if (trailerList.isEmpty()) {
+            if (trailerList == null || trailerList.isEmpty()) {
                 removeTrailerSection();
             } else {
                 // Restore Trailer State
@@ -118,7 +118,7 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
             }
 
             // If there are no reviews, remove that section from the UI
-            if (reviewList.isEmpty()) {
+            if (reviewList == null || reviewList.isEmpty()) {
                 removeReviewSection();
             } else {
                 // Restore Review state
@@ -223,8 +223,9 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
         mReleaseYearTv.setText(mHelper.getReleaseYear());
         mSynopsisTv.setText(mHelper.getMovieSynopsis());
         mRatingBar.setRating(mHelper.getMovieRating());
-        mTotalRatingsTv.setText("(" + mHelper.getTotalRatings() + " " +
-                getResources().getString(R.string.total_ratings) + ")");
+        String ratings = String.format(
+                getResources().getString(R.string.total_ratings), mHelper.getTotalRatings());
+        mTotalRatingsTv.setText(ratings);
     }
 
     /**
@@ -285,7 +286,7 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
      *
      * @param movieId - (int) the ID of the movie
      */
-    public void setIsFavorite(final int movieId) {
+    private void setIsFavorite(final int movieId) {
         // Check if the movie is a favorite
         boolean queryIsFavorite = mHelper.queryIsFavorite(movieId);
         if (queryIsFavorite) {
@@ -297,13 +298,13 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
         }
     }
 
-    public void removeTrailerSection() {
+    private void removeTrailerSection() {
         mTrailerDivider.setVisibility(View.GONE);
         mTrailerTeaserHeaderTv.setVisibility(View.GONE);
         mTrailerRv.setVisibility(View.GONE);
     }
 
-    public void removeReviewSection() {
+    private void removeReviewSection() {
         mReviewDivider.setVisibility(View.GONE);
         mReviewHeaderTv.setVisibility(View.GONE);
         mReviewRv.setVisibility(View.GONE);
@@ -370,7 +371,7 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
 
     @Override
     public void onFailure(String message) {
-        mToast.makeText(DetailActivity.this, message, Toast.LENGTH_SHORT);
+        mToast.makeText(DetailActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 
     public interface OnTrailerClickListener {

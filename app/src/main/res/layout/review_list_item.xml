@@ -20,7 +20,8 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="@dimen/small_spacing"
+            android:paddingStart="@dimen/small_spacing"
+            android:paddingEnd="@dimen/small_spacing"
             android:text="@string/posted_by"
             android:textColor="@color/detailFontColor"
             android:textSize="@dimen/base_text_size" />
@@ -30,13 +31,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/small_spacing"
-            android:paddingLeft="@dimen/small_spacing"
+            android:paddingStart="@dimen/small_spacing"
+            android:paddingEnd="@dimen/small_spacing"
             android:textColor="@color/colorAccent"
             android:textSize="@dimen/base_text_size" />
 
 
     </LinearLayout>
-    
+
     <TextView
         android:id="@+id/content_tv"
         android:layout_width="@dimen/zero_dp"

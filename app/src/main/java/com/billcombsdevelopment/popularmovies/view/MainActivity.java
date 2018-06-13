@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
     /**
      * Callback for initial movie data load
      *
-     * @param movieList
+     * @param movieList - List of Movie objects
      */
     @Override
     public void onMovieSuccess(List<Movie> movieList) {
@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
     /**
      * Callback for subsequent requests for pagination
      *
-     * @param movieList
+     * @param movieList - List of Movie objects
      */
     @Override
     public void onUpdate(List<Movie> movieList) {

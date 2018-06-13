@@ -8,7 +8,7 @@ import java.util.List;
 public class MovieReviewData {
     @SerializedName("results")
     @Expose
-    List<MovieReview> mReviews;
+    private List<MovieReview> mReviews = null;
     @SerializedName("id")
     @Expose
     private Integer mId;

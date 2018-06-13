@@ -28,6 +28,7 @@
                 android:layout_marginBottom="@dimen/small_spacing"
                 android:layout_marginTop="@dimen/small_spacing"
                 android:adjustViewBounds="true"
+                android:contentDescription="@string/trailer_thumb_content_desc"
                 android:scaleType="centerCrop" />
 
             <TextView
@@ -48,6 +49,7 @@
                 android:layout_height="@dimen/large_spacing"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
+                android:contentDescription="@string/trailer_play_content_desc"
                 android:paddingBottom="@dimen/small_spacing"
                 android:src="@drawable/playwhite" />
 

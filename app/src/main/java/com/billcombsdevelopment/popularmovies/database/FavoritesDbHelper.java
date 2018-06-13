@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.billcombsdevelopment.popularmovies.database.FavoritesDbContract.MovieEntry;
 
-public class FavoritesDbHelper extends SQLiteOpenHelper {
+class FavoritesDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "favorites.db";
     private static final int DATABASE_VERSION = 1;

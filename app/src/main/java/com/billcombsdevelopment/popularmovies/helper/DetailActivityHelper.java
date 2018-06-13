@@ -26,8 +26,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class DetailActivityHelper implements PopularMoviesContract.DetailPresenter,
-        PopularMoviesContract.DetailDataListener {
+public class DetailActivityHelper implements PopularMoviesContract.DetailDataListener {
 
     private static final String TAG = DetailActivityHelper.class.getSimpleName();
     private final PopularMoviesContract.DetailView mDetailView;
@@ -36,7 +35,7 @@ public class DetailActivityHelper implements PopularMoviesContract.DetailPresent
     private List<MovieTrailer> mTrailerList = new ArrayList<>();
     private List<MovieReview> mReviewList = new ArrayList<>();
     private boolean mIsFavorite = false;
-    private Context mContext;
+    private final Context mContext;
 
     public DetailActivityHelper(Movie movie, PopularMoviesContract.DetailView detailView,
                                 Context context) {
@@ -110,8 +109,7 @@ public class DetailActivityHelper implements PopularMoviesContract.DetailPresent
     }
 
     public int getTotalRatings() {
-        int count = mMovie.getVoteCount();
-        return count;
+        return mMovie.getVoteCount();
     }
 
     public List<MovieTrailer> getTrailerList() {
@@ -142,7 +140,7 @@ public class DetailActivityHelper implements PopularMoviesContract.DetailPresent
         contentValues.put(MovieEntry.COLUMN_NAME_VOTE_AVERAGE, movie.getUserRating());
         contentValues.put(MovieEntry.COLUMN_NAME_VOTE_COUNT, movie.getVoteCount());
 
-        Uri uri = mContext.getContentResolver().insert(MovieEntry.CONTENT_URI, contentValues);
+        mContext.getContentResolver().insert(MovieEntry.CONTENT_URI, contentValues);
     }
 
     public void deleteFromFavorites(Integer movieId) {
@@ -172,22 +170,16 @@ public class DetailActivityHelper implements PopularMoviesContract.DetailPresent
                         null,
                         null);
         if (cursor != null) {
-            if (cursor.getCount() > 0) {
-                mIsFavorite = true;
-            } else {
-                mIsFavorite = false;
-            }
+            mIsFavorite = cursor.getCount() > 0;
         }
-
+        cursor.close();
         return mIsFavorite;
     }
 
-    @Override
     public void loadTrailerData(String movieId) {
         mNetworkRequests.trailerRequest(movieId);
     }
 
-    @Override
     public void loadReviewData(String movieId) {
         mNetworkRequests.reviewRequest(movieId);
     }
@@ -200,7 +192,7 @@ public class DetailActivityHelper implements PopularMoviesContract.DetailPresent
          * hide the trailer section from the UI.
          */
         if (trailerData != null) {
-            mTrailerList = (ArrayList) trailerData.getMovieTrailers();
+            mTrailerList = trailerData.getMovieTrailers();
         }
         mDetailView.onTrailerSuccess(mTrailerList);
     }
@@ -213,7 +205,7 @@ public class DetailActivityHelper implements PopularMoviesContract.DetailPresent
          * hide the review section from the UI.
          */
         if (reviewData != null) {
-            mReviewList = (ArrayList) reviewData.getMovieReviews();
+            mReviewList = reviewData.getMovieReviews();
         }
         mDetailView.onReviewSuccess(mReviewList);
     }
