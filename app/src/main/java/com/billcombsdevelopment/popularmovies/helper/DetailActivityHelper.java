@@ -32,7 +32,9 @@ public class DetailActivityHelper implements PopularMoviesContract.DetailPresent
     private static final String TAG = DetailActivityHelper.class.getSimpleName();
     private final PopularMoviesContract.DetailView mDetailView;
     private final NetworkRequests mNetworkRequests;
-    private final Movie mMovie;
+    private Movie mMovie;
+    private List<MovieTrailer> mTrailerList = new ArrayList<>();
+    private List<MovieReview> mReviewList = new ArrayList<>();
     private boolean mIsFavorite = false;
     private Context mContext;
 
@@ -42,6 +44,14 @@ public class DetailActivityHelper implements PopularMoviesContract.DetailPresent
         mDetailView = detailView;
         mContext = context;
         mNetworkRequests = new NetworkRequests(this);
+    }
+
+    public Movie getMovie() {
+        return mMovie;
+    }
+
+    public void setMovie(Movie movie) {
+        mMovie = movie;
     }
 
     public String getMovieTitle() {
@@ -102,6 +112,22 @@ public class DetailActivityHelper implements PopularMoviesContract.DetailPresent
     public int getTotalRatings() {
         int count = mMovie.getVoteCount();
         return count;
+    }
+
+    public List<MovieTrailer> getTrailerList() {
+        return mTrailerList;
+    }
+
+    public void setTrailerList(List<MovieTrailer> mTrailerList) {
+        this.mTrailerList = mTrailerList;
+    }
+
+    public List<MovieReview> getReviewList() {
+        return mReviewList;
+    }
+
+    public void setReviewList(List<MovieReview> mReviewList) {
+        this.mReviewList = mReviewList;
     }
 
     public void addToFavorites(Movie movie) {
@@ -171,16 +197,15 @@ public class DetailActivityHelper implements PopularMoviesContract.DetailPresent
 
     @Override
     public void onTrailerSuccess(MovieTrailerData trailerData) {
-        List<MovieTrailer> trailerList = new ArrayList<>();
         /*
          * Check if we successfully retrieved the data we wanted. If we did, fetch the trailers.
          * If trailerData is null (502 Bad Gateway response for example) return the empty list to
          * hide the trailer section from the UI.
          */
         if (trailerData != null) {
-            trailerList = trailerData.getMovieTrailers();
+            mTrailerList = (ArrayList) trailerData.getMovieTrailers();
         }
-        mDetailView.onTrailerSuccess(trailerList);
+        mDetailView.onTrailerSuccess(mTrailerList);
     }
 
     @Override
@@ -190,11 +215,10 @@ public class DetailActivityHelper implements PopularMoviesContract.DetailPresent
          * If reviewData is null (502 Bad Gateway response for example) return the empty list to
          * hide the review section from the UI.
          */
-        List<MovieReview> movieReviews = new ArrayList<>();
         if (reviewData != null) {
-            movieReviews = reviewData.getMovieReviews();
+            mReviewList = (ArrayList) reviewData.getMovieReviews();
         }
-        mDetailView.onReviewSuccess(movieReviews);
+        mDetailView.onReviewSuccess(mReviewList);
     }
 
     @Override

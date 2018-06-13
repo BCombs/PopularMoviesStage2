@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,6 +33,7 @@ import com.billcombsdevelopment.popularmovies.model.MovieReview;
 import com.billcombsdevelopment.popularmovies.model.MovieTrailer;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DetailActivity extends AppCompatActivity implements PopularMoviesContract.DetailView {
@@ -54,7 +56,9 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
     private ImageButton mFavoritesBtn;
 
     private ReviewListAdapter mReviewAdapter;
+    private Parcelable mReviewManagerState;
     private TrailerListAdapter mTrailerAdapter;
+    private Parcelable mTrailerManagerState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +93,25 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
         loadUiData(movie);
         initTrailerRecyclerView();
         initReviewRecyclerView();
+
+        if (savedInstanceState != null) {
+            mTrailerManagerState = savedInstanceState.getParcelable("trailerManagerState");
+            mReviewManagerState = savedInstanceState.getParcelable("reviewManagerState");
+            List<MovieTrailer> trailerList =
+                    savedInstanceState.getParcelableArrayList("trailers");
+            List<MovieReview> reviewList =
+                    savedInstanceState.getParcelableArrayList("reviews");
+
+            // Restore Trailer State
+            mTrailerAdapter.setTrailerList(trailerList);
+            mTrailerAdapter.notifyDataSetChanged();
+            mTrailerRv.getLayoutManager().onRestoreInstanceState(mTrailerManagerState);
+
+            // Restore Review state
+            mReviewAdapter.setReviewList(reviewList);
+            mReviewAdapter.notifyDataSetChanged();
+            mReviewRv.getLayoutManager().onRestoreInstanceState(mReviewManagerState);
+        }
     }
 
     private void initUiElements() {
@@ -192,10 +215,6 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
      * Setup all components related to the movie trailer RecyclerView
      */
     private void initTrailerRecyclerView() {
-        LinearLayoutManager trailerManager = new LinearLayoutManager(this,
-                LinearLayoutManager.HORIZONTAL, false);
-        mTrailerRv.setLayoutManager(trailerManager);
-
         mTrailerAdapter = new TrailerListAdapter(this, new OnTrailerClickListener() {
             @Override
             public void onItemClick(MovieTrailer trailer) {
@@ -217,7 +236,11 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
                 }
             }
         });
+
         mTrailerRv.setAdapter(mTrailerAdapter);
+        mTrailerRv.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.HORIZONTAL, false));
+        mTrailerRv.setHasFixedSize(true);
     }
 
     /**
@@ -233,7 +256,8 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
             }
         });
         mReviewRv.setAdapter(mReviewAdapter);
-        mReviewRv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        mReviewRv.setLayoutManager(new LinearLayoutManager(this,
+                LinearLayoutManager.HORIZONTAL, false));
         mReviewRv.setHasFixedSize(true);
         SnapHelper snapHelper = new LinearSnapHelper();
         snapHelper.attachToRecyclerView(mReviewRv);
@@ -283,6 +307,25 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
                 }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("trailers",
+                (ArrayList<? extends Parcelable>) mHelper.getTrailerList());
+        outState.putParcelableArrayList("reviews",
+                (ArrayList<? extends Parcelable>) mHelper.getReviewList());
+        outState.putParcelable("trailerManagerState", mTrailerManagerState);
+        outState.putParcelable("reviewManagerState", mReviewManagerState);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Save the states of the trailer and review layout managers
+        mTrailerManagerState = mTrailerRv.getLayoutManager().onSaveInstanceState();
+        mReviewManagerState = mReviewRv.getLayoutManager().onSaveInstanceState();
     }
 
     @Override

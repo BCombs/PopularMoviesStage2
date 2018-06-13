@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
         getWindow().getDecorView().setBackgroundColor(Color.BLACK);
 
         initHelper();
-        initToolbar();
+        initActionBar();
         initRecyclerView();
 
         if (savedInstanceState != null) {
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
             mLayoutManagerState = savedInstanceState.getParcelable("layoutManagerState");
 
             mHelper.onRestore(movieList, currentPage, totalPages, sortOption);
-            mRecyclerView.invalidate();
+
             mRecyclerAdapter.setMovieList(movieList);
             mRecyclerAdapter.notifyDataSetChanged();
             mGridLayoutManager.onRestoreInstanceState(mLayoutManagerState);
@@ -69,15 +69,21 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
     }
 
     /**
-     * Initializes the toolbar and the Spinner contained in it
+     * Initializes the SupportActionBar and the Spinner contained in it
      */
-    private void initToolbar() {
-        // Toolbar and sorting spinner initialization
+    private void initActionBar() {
+        // ActionBar
         Toolbar toolbar = findViewById(R.id.main_toolbar);
-        toolbar.setTitle(R.string.app_name);
-        mSpinner = findViewById(R.id.main_spinner);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(R.string.app_name);
+            }
+        }
 
         // Spinner setup
+        mSpinner = findViewById(R.id.main_spinner);
+
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this,
                 R.layout.spinner_item,
                 getResources().getStringArray(R.array.sort_options_array));
@@ -219,8 +225,8 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
 
     @Override
     protected void onPause() {
-        mLayoutManagerState = mGridLayoutManager.onSaveInstanceState();
         super.onPause();
+        mLayoutManagerState = mGridLayoutManager.onSaveInstanceState();
     }
 
     @Override

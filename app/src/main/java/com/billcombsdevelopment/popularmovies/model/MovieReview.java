@@ -1,22 +1,33 @@
 package com.billcombsdevelopment.popularmovies.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class MovieReview {
+public class MovieReview implements Parcelable {
 
+    public static final Creator<MovieReview> CREATOR = new Creator<MovieReview>() {
+        @Override
+        public MovieReview createFromParcel(Parcel in) {
+            return new MovieReview(in);
+        }
+
+        @Override
+        public MovieReview[] newArray(int size) {
+            return new MovieReview[size];
+        }
+    };
     @SerializedName("author")
     @Expose
     private String mAuthor;
-
     @SerializedName("content")
     @Expose
     private String mContent;
-
     @SerializedName("id")
     @Expose
     private String mId;
-
     @SerializedName("url")
     @Expose
     private String mUrl;
@@ -26,6 +37,26 @@ public class MovieReview {
         this.mContent = content;
         this.mId = id;
         this.mUrl = url;
+    }
+
+    protected MovieReview(Parcel in) {
+        mAuthor = in.readString();
+        mContent = in.readString();
+        mId = in.readString();
+        mUrl = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mAuthor);
+        dest.writeString(mContent);
+        dest.writeString(mId);
+        dest.writeString(mUrl);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public String getAuthor() {
