@@ -142,10 +142,7 @@ public class DetailActivityHelper implements PopularMoviesContract.DetailPresent
         contentValues.put(MovieEntry.COLUMN_NAME_VOTE_AVERAGE, movie.getUserRating());
         contentValues.put(MovieEntry.COLUMN_NAME_VOTE_COUNT, movie.getVoteCount());
 
-        Log.d("ContentValues", contentValues.getAsString(MovieEntry.COLUMN_NAME_TITLE));
-
         Uri uri = mContext.getContentResolver().insert(MovieEntry.CONTENT_URI, contentValues);
-        Log.d(TAG, "Added " + uri);
     }
 
     public void deleteFromFavorites(Integer movieId) {
@@ -153,8 +150,7 @@ public class DetailActivityHelper implements PopularMoviesContract.DetailPresent
         uri = uri.buildUpon().appendPath(movieId.toString()).build();
         String where = MovieEntry.COLUMN_NAME_MOVIE_ID + "=?";
         String[] selectionArgs = {movieId.toString()};
-        int deletedRow = mContext.getContentResolver().delete(uri, where, selectionArgs);
-        Log.d("deleteFromFavorites", "Deleted : " + deletedRow + " row/s.");
+        mContext.getContentResolver().delete(uri, where, selectionArgs);
     }
 
     public void setAsFavorite() {
@@ -175,9 +171,10 @@ public class DetailActivityHelper implements PopularMoviesContract.DetailPresent
                         null,
                         null,
                         null);
-
-        if (cursor.getCount() > 0) {
-            mIsFavorite = true;
+        if (cursor != null) {
+            if (cursor.getCount() > 0) {
+                mIsFavorite = true;
+            }
         } else {
             mIsFavorite = false;
         }
