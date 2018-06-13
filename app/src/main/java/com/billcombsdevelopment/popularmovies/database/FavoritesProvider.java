@@ -127,6 +127,6 @@ public class FavoritesProvider extends ContentProvider {
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+        throw new RuntimeException("Method update() is not implemented.");
     }
 }
