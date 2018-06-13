@@ -174,9 +174,9 @@ public class DetailActivityHelper implements PopularMoviesContract.DetailPresent
         if (cursor != null) {
             if (cursor.getCount() > 0) {
                 mIsFavorite = true;
+            } else {
+                mIsFavorite = false;
             }
-        } else {
-            mIsFavorite = false;
         }
 
         return mIsFavorite;
