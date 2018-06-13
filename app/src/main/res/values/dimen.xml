@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="header_text_size">20sp</dimen>
+    <dimen name="sub_header_text_size">14sp</dimen>
+    <dimen name="base_text_size">16sp</dimen>
+
+    <!-- Spacing -->
+    <dimen name="small_spacing">5dp</dimen>
+    <dimen name="base_spacing">10dp</dimen>
+    <dimen name="large_spacing">20dp</dimen>
+    <dimen name="main_poster_top_margin">184dp</dimen>
+    <dimen name="textview_content_spacing">2dp</dimen>
+
+    <!-- Image dimensions -->
+    <dimen name="main_poster_width">140dp</dimen>
+    <dimen name="main_poster_width_land">240dp</dimen>
+    <dimen name="zero_dp">0dp</dimen>
+
+    <dimen name="details_linear_layout_width">220dp</dimen>
+    <dimen name="review_rv_height">180dp</dimen>
+    <dimen name="trailer_card_width">130dp</dimen>
+    <dimen name="trailer_card_height">159dp</dimen>
+</resources>

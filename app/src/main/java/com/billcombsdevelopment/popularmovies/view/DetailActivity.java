@@ -107,15 +107,25 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
             mHelper.setTrailerList(trailerList);
             mHelper.setReviewList(reviewList);
 
-            // Restore Trailer State
-            mTrailerAdapter.setTrailerList(trailerList);
-            mTrailerAdapter.notifyDataSetChanged();
-            mTrailerRv.getLayoutManager().onRestoreInstanceState(mTrailerManagerState);
+            // If there are no trailers, remove that section from the UI
+            if (trailerList.isEmpty()) {
+                removeTrailerSection();
+            } else {
+                // Restore Trailer State
+                mTrailerAdapter.setTrailerList(trailerList);
+                mTrailerAdapter.notifyDataSetChanged();
+                mTrailerRv.getLayoutManager().onRestoreInstanceState(mTrailerManagerState);
+            }
 
-            // Restore Review state
-            mReviewAdapter.setReviewList(reviewList);
-            mReviewAdapter.notifyDataSetChanged();
-            mReviewRv.getLayoutManager().onRestoreInstanceState(mReviewManagerState);
+            // If there are no reviews, remove that section from the UI
+            if (reviewList.isEmpty()) {
+                removeReviewSection();
+            } else {
+                // Restore Review state
+                mReviewAdapter.setReviewList(reviewList);
+                mReviewAdapter.notifyDataSetChanged();
+                mReviewRv.getLayoutManager().onRestoreInstanceState(mReviewManagerState);
+            }
         } else {
             // savedInstanceState was null, fetch trailers and reviews
             // Load movie trailers
