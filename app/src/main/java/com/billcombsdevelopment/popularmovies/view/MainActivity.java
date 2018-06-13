@@ -46,22 +46,36 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
         // Found at https://stackoverflow.com/questions/4761686/how-to-set-background-color-of-an-activity-to-white-programmatically
         getWindow().getDecorView().setBackgroundColor(Color.BLACK);
 
+        initHelper();
+        initToolbar();
+        initRecyclerView();
+
+        if (savedInstanceState != null) {
+
+            ArrayList<Movie> movieList = savedInstanceState.getParcelableArrayList("movieList");
+            int totalPages = savedInstanceState.getInt("totalPages");
+            int currentPage = savedInstanceState.getInt("currentPage");
+            String sortOption = savedInstanceState.getString("sortOption");
+            mLayoutManagerState = savedInstanceState.getParcelable("layoutManagerState");
+
+            mHelper.onRestore(movieList, currentPage, totalPages, sortOption);
+            mRecyclerView.invalidate();
+            mRecyclerAdapter.setMovieList(movieList);
+            mRecyclerAdapter.notifyDataSetChanged();
+            mGridLayoutManager.onRestoreInstanceState(mLayoutManagerState);
+        } else {
+            mHelper.loadMovieData(mHelper.getSortOption());
+        }
+    }
+
+    /**
+     * Initializes the toolbar and the Spinner contained in it
+     */
+    private void initToolbar() {
         // Toolbar and sorting spinner initialization
         Toolbar toolbar = findViewById(R.id.main_toolbar);
         toolbar.setTitle(R.string.app_name);
         mSpinner = findViewById(R.id.main_spinner);
-
-        // Initialize Presenter
-        ContentResolver resolver = getContentResolver();
-        mHelper = new MainActivityHelper(this, resolver);
-        // Set to default sorting option
-        mHelper.setSortOption(getResources().getString(R.string.most_popular));
-
-        /*
-         * Registering observer in onCreate() and unregistering in onDestroy() so we can still
-         * detect changes to the database when MainActivity is in onPause()
-         */
-        mHelper.registerObserver();
 
         // Spinner setup
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this,
@@ -86,7 +100,29 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
 
             }
         });
+    }
 
+    /**
+     * Initializes the activity helper class and registers its observer
+     */
+    private void initHelper() {
+        // Initialize helper
+        ContentResolver resolver = getContentResolver();
+        mHelper = new MainActivityHelper(this, resolver);
+        // Set to default sorting option
+        mHelper.setSortOption(getResources().getString(R.string.most_popular));
+
+        /*
+         * Registering observer in onCreate() and unregistering in onDestroy() so we can still
+         * detect changes to the database when MainActivity is in onPause()
+         */
+        mHelper.registerObserver();
+    }
+
+    /**
+     * Initializes all components related to the RecyclerView displaying movie posters
+     */
+    private void initRecyclerView() {
         // define poster width in pixels
         int posterWidth = 500;
         mGridLayoutManager = new GridLayoutManager(this, calculateSpanCount(posterWidth));
@@ -141,22 +177,6 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
                 }
             }
         });
-
-        if (savedInstanceState != null) {
-            movieList = savedInstanceState.getParcelableArrayList("movieList");
-            int totalPages = savedInstanceState.getInt("totalPages");
-            int currentPage = savedInstanceState.getInt("currentPage");
-            String sortOption = savedInstanceState.getString("sortOption");
-            mLayoutManagerState = savedInstanceState.getParcelable("layoutManagerState");
-
-            mHelper.onRestore(movieList, currentPage, totalPages, sortOption);
-            mRecyclerView.invalidate();
-            mRecyclerAdapter.setMovieList(movieList);
-            mRecyclerAdapter.notifyDataSetChanged();
-            mGridLayoutManager.onRestoreInstanceState(mLayoutManagerState);
-        } else {
-            mHelper.loadMovieData(mHelper.getSortOption());
-        }
     }
 
     /**
