@@ -111,7 +111,7 @@
                     android:alpha="0.3"
                     android:background="@android:color/transparent"
                     android:contentDescription="@string/favorite_btn_content_desc"
-                    android:src="@drawable/heart_off" />
+                    android:src="@drawable/heart_unclicked" />
 
             </LinearLayout>
 

@@ -10,7 +10,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 
-import com.billcombsdevelopment.popularmovies.R;
 import com.billcombsdevelopment.popularmovies.database.FavoritesDbContract.MovieEntry;
 import com.billcombsdevelopment.popularmovies.model.Movie;
 import com.billcombsdevelopment.popularmovies.model.MovieReview;
@@ -35,8 +34,6 @@ public class DetailActivityHelper implements PopularMoviesContract.DetailPresent
     private final NetworkRequests mNetworkRequests;
     private final Movie mMovie;
     private boolean mIsFavorite = false;
-
-    // TEMPORARY UNTIL DAGGER 2 DEPENDENCY INJECTION
     private Context mContext;
 
     public DetailActivityHelper(Movie movie, PopularMoviesContract.DetailView detailView,
@@ -102,10 +99,9 @@ public class DetailActivityHelper implements PopularMoviesContract.DetailPresent
         return mMovie.getUserRating() / 2;
     }
 
-    public String getTotalRatings(Context context) {
+    public int getTotalRatings() {
         int count = mMovie.getVoteCount();
-        String totalRatings = context.getResources().getString(R.string.total_ratings);
-        return "(" + count + " " + totalRatings + ")";
+        return count;
     }
 
     public void addToFavorites(Movie movie) {

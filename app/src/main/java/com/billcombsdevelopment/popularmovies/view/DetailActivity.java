@@ -37,13 +37,21 @@ import java.util.List;
 public class DetailActivity extends AppCompatActivity implements PopularMoviesContract.DetailView {
 
     private final Toast mToast = null;
-    private DetailActivityHelper mPresenter;
+    private DetailActivityHelper mHelper;
     private RecyclerView mTrailerRv;
     private RecyclerView mReviewRv;
     private View mTrailerDivider;
     private View mReviewDivider;
     private TextView mTrailerTeaserHeaderTv;
     private TextView mReviewHeaderTv;
+    private ImageView mBackgroundPosterIv;
+    private ImageView mMainPosterIv;
+    private TextView mMovieTitleTv;
+    private TextView mReleaseYearTv;
+    private TextView mSynopsisTv;
+    private RatingBar mRatingBar;
+    private TextView mTotalRatingsTv;
+    private ImageButton mFavoritesBtn;
 
     private ReviewListAdapter mReviewAdapter;
     private TrailerListAdapter mTrailerAdapter;
@@ -66,69 +74,98 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
             }
         }
 
-        ImageView backgroundPosterIv = findViewById(R.id.background_poster_iv);
-        ImageView mainPosterIv = findViewById(R.id.main_poster_iv);
-        TextView movieTitleTv = findViewById(R.id.movie_title_tv);
-        TextView releaseYearTv = findViewById(R.id.release_year_tv);
-        TextView synopsisTv = findViewById(R.id.movie_synopsis_tv);
-        RatingBar ratingBar = findViewById(R.id.rating_bar);
-        TextView totalRatingsTv = findViewById(R.id.total_ratings_tv);
-        final ImageButton favoritesBtn = findViewById(R.id.favorites_btn);
+        final Movie movie = getIntent().getParcelableExtra("movie");
+        // Initialize helper class
+        mHelper = new DetailActivityHelper(movie, this, getApplicationContext());
 
+        // Set action bar title to the movie title
+        if (getSupportActionBar() != null) {
+            // Set the toolbar title to the movie title
+            getSupportActionBar().setTitle(mHelper.getMovieTitle());
+        }
+
+        // Initialize the UI and load data
+        initUiElements();
+        loadUiData(movie);
+        initTrailerRecyclerView();
+        initReviewRecyclerView();
+    }
+
+    private void initUiElements() {
+        mBackgroundPosterIv = findViewById(R.id.background_poster_iv);
+        mMainPosterIv = findViewById(R.id.main_poster_iv);
+        mMovieTitleTv = findViewById(R.id.movie_title_tv);
+        mReleaseYearTv = findViewById(R.id.release_year_tv);
+        mSynopsisTv = findViewById(R.id.movie_synopsis_tv);
+        mRatingBar = findViewById(R.id.rating_bar);
+        mTotalRatingsTv = findViewById(R.id.total_ratings_tv);
+        mFavoritesBtn = findViewById(R.id.favorites_btn);
         mTrailerDivider = findViewById(R.id.trailer_divider);
         mReviewDivider = findViewById(R.id.review_divider);
         mTrailerTeaserHeaderTv = findViewById(R.id.trailer_teaser_header_tv);
         mReviewHeaderTv = findViewById(R.id.review_header_tv);
+        mTrailerRv = findViewById(R.id.trailer_rv);
+        mReviewRv = findViewById(R.id.review_rv);
+    }
 
-        final Movie movie = getIntent().getParcelableExtra("movie");
-        mPresenter = new DetailActivityHelper(movie, this, getApplicationContext());
+    /**
+     * Loads all of the information from the movie into the UI elements
+     *
+     * @param movie - Movie object
+     */
+    private void loadUiData(final Movie movie) {
 
-        // Check if the movie is a favorite
-        boolean queryIsFavorite = mPresenter.queryIsFavorite(movie.getId());
-        if (queryIsFavorite) {
-            favoritesBtn.setImageResource(R.drawable.heart_clicked);
-            favoritesBtn.setAlpha(1.0f);
-        } else {
-            favoritesBtn.setImageResource(R.drawable.heart_off);
-            favoritesBtn.setAlpha(0.3f);
-        }
+        // Load the backdrop poster
+        Picasso.with(this).load(mHelper.getBackdropUrl())
+                .placeholder(R.drawable.film)
+                .error(R.drawable.film)
+                .into(mBackgroundPosterIv);
 
-        // Load movie trailers
-        mPresenter.loadTrailerData(mPresenter.getMovieId());
-        mPresenter.loadReviewData(mPresenter.getMovieId());
+        // Load the main movie poster image
+        Picasso.with(this).load(mHelper.getPosterUrl())
+                .placeholder(R.drawable.film)
+                .error(R.drawable.film)
+                .into(mMainPosterIv);
 
-        if (getSupportActionBar() != null) {
-            // Set the toolbar title to the movie title
-            getSupportActionBar().setTitle(mPresenter.getMovieTitle());
-        }
-
-        favoritesBtn.setOnClickListener(new View.OnClickListener() {
+        // Favorite button setup
+        setIsFavorite(movie.getId());
+        mFavoritesBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mPresenter.isFavorite()) {
-                    mPresenter.deleteFromFavorites(movie.getId());
-                    favoritesBtn.setImageResource(R.drawable.heart_off);
-                    favoritesBtn.setAlpha(0.3f);
+                if (mHelper.isFavorite()) {
+                    /*
+                     * The movie is currently a favorite, delete it from the database
+                     * and update the drawable
+                     */
+                    mHelper.deleteFromFavorites(movie.getId());
+                    mFavoritesBtn.setImageResource(R.drawable.heart_unclicked);
+                    mFavoritesBtn.setAlpha(0.3f);
                     if (mToast != null) {
                         mToast.cancel();
                     }
 
-                    String message = mPresenter.getMovieTitle() + " " +
+                    // Let the user know we removed it from the database
+                    String message = mHelper.getMovieTitle() + " " +
                             getResources().getString(R.string.removed_from_favorites);
                     mToast.makeText(DetailActivity.this, message,
                             Toast.LENGTH_SHORT).show();
 
                 } else {
-                    mPresenter.setAsFavorite();
-                    favoritesBtn.setImageResource(R.drawable.heart_clicked);
-                    favoritesBtn.setAlpha(1.0f);
+                    /*
+                     * The movie is not a favorite. Add it to the database and
+                     * update the drawable
+                     */
+                    mHelper.setAsFavorite();
+                    mFavoritesBtn.setImageResource(R.drawable.heart_clicked);
+                    mFavoritesBtn.setAlpha(1.0f);
                     if (mToast != null) {
                         mToast.cancel();
                     }
 
-                    mPresenter.addToFavorites(movie);
+                    mHelper.addToFavorites(movie);
 
-                    String message = mPresenter.getMovieTitle() + " " +
+                    // Let the user know we added it to the database
+                    String message = mHelper.getMovieTitle() + " " +
                             getResources().getString(R.string.added_to_favorites);
                     mToast.makeText(DetailActivity.this, message,
                             Toast.LENGTH_SHORT).show();
@@ -136,26 +173,25 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
             }
         });
 
-        // Load the backdrop poster
-        Picasso.with(this).load(mPresenter.getBackdropUrl())
-                .placeholder(R.drawable.film)
-                .error(R.drawable.film)
-                .into(backgroundPosterIv);
+        // set TextView data
+        mMovieTitleTv.setText(mHelper.getMovieTitle());
+        mReleaseYearTv.setText(mHelper.getReleaseYear());
+        mSynopsisTv.setText(mHelper.getMovieSynopsis());
+        mRatingBar.setRating(mHelper.getMovieRating());
+        mTotalRatingsTv.setText("(" + mHelper.getTotalRatings() + " " +
+                getResources().getString(R.string.total_ratings) + ")");
 
-        // Load the main movie poster image
-        Picasso.with(this).load(mPresenter.getPosterUrl())
-                .placeholder(R.drawable.film)
-                .error(R.drawable.film)
-                .into(mainPosterIv);
+        // Load movie trailers
+        mHelper.loadTrailerData(mHelper.getMovieId());
 
-        movieTitleTv.setText(mPresenter.getMovieTitle());
-        releaseYearTv.setText(mPresenter.getReleaseYear());
-        synopsisTv.setText(mPresenter.getMovieSynopsis());
-        ratingBar.setRating(mPresenter.getMovieRating());
-        totalRatingsTv.setText(mPresenter.getTotalRatings(this));
+        // Load movie reviews
+        mHelper.loadReviewData(mHelper.getMovieId());
+    }
 
-        // Setup the trailer RecyclerView
-        mTrailerRv = findViewById(R.id.trailer_rv);
+    /**
+     * Setup all components related to the movie trailer RecyclerView
+     */
+    private void initTrailerRecyclerView() {
         LinearLayoutManager trailerManager = new LinearLayoutManager(this,
                 LinearLayoutManager.HORIZONTAL, false);
         mTrailerRv.setLayoutManager(trailerManager);
@@ -182,9 +218,12 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
             }
         });
         mTrailerRv.setAdapter(mTrailerAdapter);
+    }
 
-        // Set up the review RecyclerView
-        mReviewRv = findViewById(R.id.review_rv);
+    /**
+     * Setup all components related to the review RecyclerView
+     */
+    private void initReviewRecyclerView() {
         mReviewAdapter = new ReviewListAdapter(new OnReviewClickListener() {
             @Override
             public void onItemClick(String url) {
@@ -198,6 +237,24 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
         mReviewRv.setHasFixedSize(true);
         SnapHelper snapHelper = new LinearSnapHelper();
         snapHelper.attachToRecyclerView(mReviewRv);
+    }
+
+    /**
+     * Checks to see if the movie is already stored in the favorites database
+     * If it is already a favorite, set the heart to clicked, else unclicked
+     *
+     * @param movieId - (int) the ID of the movie
+     */
+    public void setIsFavorite(final int movieId) {
+        // Check if the movie is a favorite
+        boolean queryIsFavorite = mHelper.queryIsFavorite(movieId);
+        if (queryIsFavorite) {
+            mFavoritesBtn.setImageResource(R.drawable.heart_clicked);
+            mFavoritesBtn.setAlpha(1.0f);
+        } else {
+            mFavoritesBtn.setImageResource(R.drawable.heart_unclicked);
+            mFavoritesBtn.setAlpha(0.3f);
+        }
     }
 
     public void removeTrailerSection() {
