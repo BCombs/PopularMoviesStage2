@@ -68,7 +68,7 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
         // Found at https://stackoverflow.com/questions/4761686/how-to-set-background-color-of-an-activity-to-white-programmatically
         getWindow().getDecorView().setBackgroundColor(Color.BLACK);
 
-        // Toolbar setup
+        // ActionBar setup
         Toolbar toolbar = findViewById(R.id.detail_toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -79,28 +79,33 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
         }
 
         final Movie movie = getIntent().getParcelableExtra("movie");
+
         // Initialize helper class
         mHelper = new DetailActivityHelper(movie, this, getApplicationContext());
 
-        // Set action bar title to the movie title
+        // Set ActionBar title to the movie title
         if (getSupportActionBar() != null) {
-            // Set the toolbar title to the movie title
             getSupportActionBar().setTitle(mHelper.getMovieTitle());
         }
 
         // Initialize the UI and load data
         initUiElements();
-        loadUiData(movie);
         initTrailerRecyclerView();
         initReviewRecyclerView();
+        loadUiData(movie);
 
         if (savedInstanceState != null) {
+            // We already have trailers and reviews, no need to fetch them again
             mTrailerManagerState = savedInstanceState.getParcelable("trailerManagerState");
             mReviewManagerState = savedInstanceState.getParcelable("reviewManagerState");
             List<MovieTrailer> trailerList =
                     savedInstanceState.getParcelableArrayList("trailers");
             List<MovieReview> reviewList =
                     savedInstanceState.getParcelableArrayList("reviews");
+
+            // Set the review and trailer list in helper class
+            mHelper.setTrailerList(trailerList);
+            mHelper.setReviewList(reviewList);
 
             // Restore Trailer State
             mTrailerAdapter.setTrailerList(trailerList);
@@ -111,6 +116,13 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
             mReviewAdapter.setReviewList(reviewList);
             mReviewAdapter.notifyDataSetChanged();
             mReviewRv.getLayoutManager().onRestoreInstanceState(mReviewManagerState);
+        } else {
+            // savedInstanceState was null, fetch trailers and reviews
+            // Load movie trailers
+            mHelper.loadTrailerData(mHelper.getMovieId());
+
+            // Load movie reviews
+            mHelper.loadReviewData(mHelper.getMovieId());
         }
     }
 
@@ -203,12 +215,6 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
         mRatingBar.setRating(mHelper.getMovieRating());
         mTotalRatingsTv.setText("(" + mHelper.getTotalRatings() + " " +
                 getResources().getString(R.string.total_ratings) + ")");
-
-        // Load movie trailers
-        mHelper.loadTrailerData(mHelper.getMovieId());
-
-        // Load movie reviews
-        mHelper.loadReviewData(mHelper.getMovieId());
     }
 
     /**
