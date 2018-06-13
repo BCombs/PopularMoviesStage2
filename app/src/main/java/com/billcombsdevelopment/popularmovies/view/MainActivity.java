@@ -6,7 +6,6 @@ package com.billcombsdevelopment.popularmovies.view;
 
 import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -87,12 +87,9 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
             }
         });
 
-        // Get the orientation and set GridLayoutManager span accordingly
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            mGridLayoutManager = new GridLayoutManager(this, 2);
-        } else {
-            mGridLayoutManager = new GridLayoutManager(this, 4);
-        }
+        // define poster width in pixels
+        int posterWidth = 500;
+        mGridLayoutManager = new GridLayoutManager(this, calculateSpanCount(posterWidth));
 
         // RecyclerView setup
         mRecyclerView = findViewById(R.id.movie_list_rv);
@@ -160,6 +157,21 @@ public class MainActivity extends AppCompatActivity implements PopularMoviesCont
         } else {
             mHelper.loadMovieData(mHelper.getSortOption());
         }
+    }
+
+    /**
+     * @param posterWidth - Width in pixels of the poster
+     * @return the int to set the span count of the GridLayoutManager
+     */
+    private int calculateSpanCount(int posterWidth) {
+        // Information about display (size, density, ...)
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
+        // Get the absolute width of display in pixels
+        float screenWidth = metrics.widthPixels;
+
+        return Math.round(screenWidth / posterWidth);
     }
 
     /**
