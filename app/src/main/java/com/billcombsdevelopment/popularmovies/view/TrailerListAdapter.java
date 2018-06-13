@@ -74,8 +74,8 @@ public class TrailerListAdapter extends RecyclerView.Adapter<TrailerListAdapter.
             String thumbnailUrl = BASE_THUMBNAIL_URL + trailer.getKey() + DEFAULT_THUMBNAIL_IMAGE;
 
             Picasso.with(mContext).load(thumbnailUrl)
-                    .placeholder(R.drawable.film)
-                    .error(R.drawable.film)
+                    .placeholder(R.drawable.ic_autorenew_black_24dp)
+                    .error(R.drawable.ic_autorenew_black_24dp)
                     .into(mTrailerIv);
 
             mTrailerTitleTv.setText(trailer.getName());

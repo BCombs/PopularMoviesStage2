@@ -68,8 +68,8 @@ public class MovieListAdapter extends RecyclerView.Adapter<MovieListAdapter.View
             String imageUrl = BASE_POSTER_URL + movie.getPosterPath();
 
             Picasso.with(mContext).load(imageUrl)
-                    .placeholder(R.drawable.film)
-                    .error(R.drawable.film)
+                    .placeholder(R.drawable.ic_autorenew_black_24dp)
+                    .error(R.drawable.ic_autorenew_black_24dp)
                     .noFade()
                     .into(mPosterImageView);
 

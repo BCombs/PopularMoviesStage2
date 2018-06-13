@@ -162,14 +162,14 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
 
         // Load the backdrop poster
         Picasso.with(this).load(mHelper.getBackdropUrl())
-                .placeholder(R.drawable.film)
-                .error(R.drawable.film)
+                .placeholder(R.drawable.ic_autorenew_black_24dp)
+                .error(R.drawable.ic_autorenew_black_24dp)
                 .into(mBackgroundPosterIv);
 
         // Load the main movie poster image
         Picasso.with(this).load(mHelper.getPosterUrl())
-                .placeholder(R.drawable.film)
-                .error(R.drawable.film)
+                .placeholder(R.drawable.ic_autorenew_black_24dp)
+                .error(R.drawable.ic_autorenew_black_24dp)
                 .into(mMainPosterIv);
 
         // Favorite button setup
@@ -183,7 +183,8 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
                      * and update the drawable
                      */
                     mHelper.deleteFromFavorites(movie.getId());
-                    mFavoritesBtn.setImageResource(R.drawable.heart_unclicked);
+                    mFavoritesBtn.setColorFilter(getResources().getColor(R.color.detailFontColor));
+                    mFavoritesBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
                     mFavoritesBtn.setAlpha(0.3f);
                     if (mToast != null) {
                         mToast.cancel();
@@ -201,7 +202,8 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
                      * update the drawable
                      */
                     mHelper.setAsFavorite();
-                    mFavoritesBtn.setImageResource(R.drawable.heart_clicked);
+                    mFavoritesBtn.setColorFilter(getResources().getColor(R.color.colorAccent));
+                    mFavoritesBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
                     mFavoritesBtn.setAlpha(1.0f);
                     if (mToast != null) {
                         mToast.cancel();
@@ -290,10 +292,12 @@ public class DetailActivity extends AppCompatActivity implements PopularMoviesCo
         // Check if the movie is a favorite
         boolean queryIsFavorite = mHelper.queryIsFavorite(movieId);
         if (queryIsFavorite) {
-            mFavoritesBtn.setImageResource(R.drawable.heart_clicked);
+            mFavoritesBtn.setColorFilter(getResources().getColor(R.color.colorAccent));
+            mFavoritesBtn.setImageResource(R.drawable.ic_favorite_black_24dp);
             mFavoritesBtn.setAlpha(1.0f);
         } else {
-            mFavoritesBtn.setImageResource(R.drawable.heart_unclicked);
+            mFavoritesBtn.setColorFilter(getResources().getColor(R.color.detailFontColor));
+            mFavoritesBtn.setImageResource(R.drawable.ic_favorite_border_black_24dp);
             mFavoritesBtn.setAlpha(0.3f);
         }
     }

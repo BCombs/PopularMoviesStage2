@@ -51,7 +51,8 @@
                 android:layout_centerHorizontal="true"
                 android:contentDescription="@string/trailer_play_content_desc"
                 android:paddingBottom="@dimen/small_spacing"
-                android:src="@drawable/playwhite" />
+                android:tint="@color/detailFontColor"
+                android:src="@drawable/ic_play_arrow_black_24dp" />
 
         </RelativeLayout>
 
