@@ -1,5 +1,5 @@
 # PopularMoviesStage2
-Popular Movies Stage 2 project for Udacity
+View movies filtered by new releases or highest rated. Reviews and trailers from YouTube can be viewed as well as the ability to store movies in favorites for later viewing. Uses SQLite for data persistence and RESTful web services to retrieve data. 
 
 To add your API Key go to gradle.properties file and replace YOUR_API_KEY with your actual API key.
 
